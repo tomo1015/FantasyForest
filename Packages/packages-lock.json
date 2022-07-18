@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.harumak.unityscreennavigator": {
+      "version": "https://github.com/Haruma-K/UnityScreenNavigator.git?path=/Assets/UnityScreenNavigator",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "3da810abbce164e99c6a3b8e70690d3df1b8ef0d"
+    },
     "com.unity.collab-proxy": {
       "version": "1.15.18",
       "depth": 0,
