@@ -1,5 +1,5 @@
 # License
-・Unity画面遷移（ https://github.com/Haruma-K/UnityScreenNavigator.git?path=/Assets/UnityScreenNavigator　）
+・Unity画面遷移　https://github.com/Haruma-K/UnityScreenNavigator.git?path=/Assets/UnityScreenNavigator
 <br>
 ・https://github.com/Haruma-K/UnityScreenNavigator/blob/master/LICENSE.md<br>
 
