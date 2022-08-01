@@ -174,7 +174,11 @@ MonoBehaviour:
     - _partnerPageIdentifierRegex: 
       _assetType: 1
       _animationBehaviour: {fileID: 0}
-      _animationObject: {fileID: 0}
-    _pushExitAnimations: []
+      _animationObject: {fileID: 11400000, guid: 26acdf954ca3fc146ba3f137f0dafbd3, type: 2}
+    _pushExitAnimations:
+    - _partnerPageIdentifierRegex: 
+      _assetType: 1
+      _animationBehaviour: {fileID: 0}
+      _animationObject: {fileID: 11400000, guid: c354d49e542f95a4fbce7ba94f55d5d0, type: 2}
     _popEnterAnimations: []
     _popExitAnimations: []
