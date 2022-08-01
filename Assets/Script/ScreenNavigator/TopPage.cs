@@ -21,7 +21,7 @@ namespace ScreenNavigator.Scripts
 
         private void OnClick()
         {
-            PageContainer.Of(transform).Push(ResourceKey.TopPagePrefab(),true,false);
+            PageContainer.Of(transform).Push(ResourceKey.LoadingPagePrefab(),true,false);
         }
     }
 
