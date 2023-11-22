@@ -1,15 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Constants;
 
 public abstract class BaseCharacter : MonoBehaviour
 {
-    public enum TEAM_COLOR{
-        NONE,
-        TEAM_BLUE,
-        TEAM_RED,
-    }
-
     //チーム状態
     public TEAM_COLOR team_color;//チームカラー
 
