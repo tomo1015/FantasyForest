@@ -1,0 +1,3 @@
+[submodule "FantasyForest_Project/Assets/gameassets"]
+	path = FantasyForest_Project/Assets/gameassets
+	url = https://gitlab.com/doranobi/gameassets.git
