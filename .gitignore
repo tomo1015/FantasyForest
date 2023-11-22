@@ -70,3 +70,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+## this project
+FantasyForest_Project/Library/*
+FantasyForest_Project/.vscode/*
+FantasyForest_Project/Logs/*
+FantasyForest_Project/UserSettings/*
