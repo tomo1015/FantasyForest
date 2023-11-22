@@ -2827,7 +2827,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 1
   Rigidbody: {fileID: 0}
-  speed: 10
+  speed: 5
   moveDirection: {x: 0, y: 0, z: 0}
   moveVelocity: {x: 0, y: 0, z: 0}
 --- !u!54 &1566776133

@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Player : BaseCharacter
 {
-    public float speed = 0;
+    [SerializeField] private float speed = 0;//移動速度
 
-    [SerializeField]
     private Vector3 moveDirection;//移動方向
-    [SerializeField]
     private Vector3 moveVelocity;//移動量
+    private Vector3 latestPosition;//直前のフレームにおける位置
 
     // Start is called before the first frame update
     protected override void Start()
@@ -35,7 +34,7 @@ public class Player : BaseCharacter
         Rigidbody.velocity = new Vector3(moveVelocity.x, Rigidbody.velocity.y, moveVelocity.z);
 
         //移動する方向に対してキャラクターを回転させる
-        //MoveRotation();
+        MoveRotation();
     }
 
     /// <summary>
@@ -58,9 +57,10 @@ public class Player : BaseCharacter
     /// </summary>
     private void MoveRotation()
     {
-        Vector3 diffDistance = new Vector3(transform.position.x,0,transform.position.z) - new Vector3(transform.position.x,0,transform.position.z);
+        Vector3 diffDistance = new Vector3(transform.position.x,0,transform.position.z) - new Vector3(latestPosition.x,0, latestPosition.z);
+        latestPosition = transform.position;
 
-        if(Mathf.Abs(diffDistance.x) > 0.001f || Mathf.Abs(diffDistance.z) > 0.001f)
+        if (Mathf.Abs(diffDistance.x) > 0.001f || Mathf.Abs(diffDistance.z) > 0.001f)
         {
             if(moveDirection == Vector3.zero) { return; }
 
