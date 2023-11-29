@@ -56,6 +56,6 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
 
     private void Update()
     {
-        
+        //タワーの占領状態を更新
     }
 }

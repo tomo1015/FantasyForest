@@ -7,7 +7,9 @@ public class Tower : MonoBehaviour
 {
     public TEAM_COLOR tower_color = TEAM_COLOR.NATURAL;
 
+    [SerializeField]
     private float captureGauge = 0;//占領状態を表すゲージ
+    [SerializeField]
     List<GameObject> blueCharaList = new List<GameObject>();//青軍のキャラリスト
     List<GameObject> redCharaList = new List<GameObject>();//赤軍のキャラリスト
     private bool is_capture_blue = false;//青チームが占領しているフラグ
@@ -19,6 +21,9 @@ public class Tower : MonoBehaviour
 
     [SerializeField]
     private Material[] towerMaterials = new Material[3];
+
+    //塔の管理クラス
+    public TowerManager towerManager;
 
     //タワーのゲージ状態取得
     public float GetGaptureGauge()
@@ -112,14 +117,14 @@ public class Tower : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //コライダーに入ってきたのが青チームなら
-        if (other.gameObject.tag == "TEAM_BLUE")
+        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.BLUE)
         {
             //青チーム占領リストに追加
             blueCharaList.Add(other.gameObject);
         }
 
         //コライダーに入ってきたのが赤チームなら
-        if (other.gameObject.tag == "TEAM_RED")
+        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.RED)
         {
             //赤チーム占領リストに追加
             redCharaList.Add(other.gameObject);
@@ -129,14 +134,14 @@ public class Tower : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         //コライダーから出て行ったのが青チームなら
-        if (other.gameObject.tag == "TEAM_BLUE")
+        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.BLUE)
         {
             //占領リストから削除
             blueCharaList.Remove(other.gameObject);
         }
 
         //コライダーから出て行ったのが赤チームなら
-        if (other.gameObject.tag == "TEAM_RED")
+        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.RED)
         {
             //占領リストから削除
             redCharaList.Remove(other.gameObject);
@@ -148,17 +153,52 @@ public class Tower : MonoBehaviour
     /// </summary>
     private void CangeTower()
     {
-        if(captureGauge >= blueCaptureLimit)
+
+        List<GameObject> blueTowerList = towerManager.getBlueTowerList();
+        List<GameObject> redTowerList = towerManager.getRedTowerList();
+        List<GameObject> natureTowerList = towerManager.getNatureTowerList();
+        if (captureGauge >= blueCaptureLimit)
         {
+            //青軍になった
             tower_color = TEAM_COLOR.BLUE;
+            //中立状態のタワーリストから一致するものを削除し
+            //青軍のタワーリストに追加する
+            if (natureTowerList.Contains(gameObject) == true)
+            {
+                natureTowerList.Remove(gameObject);
+                blueTowerList.Add(gameObject);
+            }
         }
         else if(captureGauge <= redCaptureLimit)
         {
+            //赤軍になった
             tower_color = TEAM_COLOR.RED;
+            //中立状態のタワーリストから一致するものを削除し
+            //赤軍のタワーリストに追加する
+            if (natureTowerList.Contains(gameObject) == true)
+            {
+                natureTowerList.Remove(gameObject);
+                redTowerList.Add(gameObject);
+            }
         } 
         else if(captureGauge == naturalCaptureLimit)
         {
+            //中立状態になった
             tower_color = TEAM_COLOR.NATURAL;
+
+            if (blueTowerList.Contains(gameObject) == true)
+            {
+                //青軍のタワーリストにある場合はリストから除外
+                //中立状態のタワーリストへ追加
+                blueTowerList.Remove(gameObject);
+                natureTowerList.Add(gameObject);
+
+            } else if(redTowerList.Contains(gameObject) == true){
+                //赤軍のタワーリストにある場合はリストから除外
+                //中立状態のタワーリストへ追加
+                redTowerList.Remove(gameObject);
+                natureTowerList.Add(gameObject);
+            }
         }
     }
 }
