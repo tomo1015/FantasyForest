@@ -5,8 +5,7 @@ using Constants;
 
 public class Tower : MonoBehaviour
 {
-    [SerializeField]
-    private TEAM_COLOR tower_color = TEAM_COLOR.NATURAL;
+    public TEAM_COLOR tower_color = TEAM_COLOR.NATURAL;
 
     private float captureGauge = 0;//占領状態を表すゲージ
     List<GameObject> blueCharaList = new List<GameObject>();//青軍のキャラリスト
