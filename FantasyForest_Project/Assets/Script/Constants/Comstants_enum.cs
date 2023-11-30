@@ -22,4 +22,15 @@ namespace Constants
         ATTACK,//攻撃
     }
 
+    /// <summary>
+    /// アニメーションのステート
+    /// </summary>
+    public enum ANIMATION_STATE
+    {
+        IDLE = 0,
+        RUN,
+        ATTACK,
+        DOWN
+    }
+
 }

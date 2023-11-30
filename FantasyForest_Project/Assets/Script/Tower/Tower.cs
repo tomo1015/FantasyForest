@@ -5,17 +5,14 @@ using Constants;
 
 public class Tower : MonoBehaviour
 {
-    public TEAM_COLOR tower_color = TEAM_COLOR.NATURAL;
-
-    [SerializeField]
+    public TEAM_COLOR tower_color;
     private float captureGauge = 0;//占領状態を表すゲージ
-    [SerializeField]
     List<GameObject> blueCharaList = new List<GameObject>();//青軍のキャラリスト
     List<GameObject> redCharaList = new List<GameObject>();//赤軍のキャラリスト
     private bool is_capture_blue = false;//青チームが占領しているフラグ
     private bool is_capture_red = false;//赤チームが占領しているフラグ
-    private float blueCaptureLimit = 500;//青チームのものとして占領できるゲージ上限
-    private float redCaptureLimit = -500;//赤チームのものとして占領できるゲージ上限
+    private float blueCaptureLimit = 100;//青チームのものとして占領できるゲージ上限 TODO：テスト
+    private float redCaptureLimit = -100;//赤チームのものとして占領できるゲージ上限 TODO：テスト
     private float naturalCaptureLimit = 0;//中立のものとして扱うゲージ上限
     private float captureGaugeValue = 0.1f;//占領中の基本ゲージ速度
 
@@ -54,14 +51,21 @@ public class Tower : MonoBehaviour
         {
             //TODO：メモリ気を付ける
             case TEAM_COLOR.NATURAL:
+                tower_color = TEAM_COLOR.NATURAL;
+                captureGauge = naturalCaptureLimit;
                 //初期設定が中立状態のタワーなら
                 //gameObject.GetComponent<Renderer>().material.color = towerMaterials[1].color;
                 break;
             case TEAM_COLOR.RED:
+                tower_color = TEAM_COLOR.RED;
+                captureGauge = redCaptureLimit;
                 //初期設定が赤状態のタワーなら
                 //gameObject.GetComponent<Renderer>().material.color = towerMaterials[0].color;
                 break;
             case TEAM_COLOR.BLUE:
+                tower_color = TEAM_COLOR.BLUE;
+                //初期ゲージを変更
+                captureGauge = blueCaptureLimit;
                 //初期設定が青状態のタワーなら
                 //gameObject.GetComponent<Renderer>().material.color = towerMaterials[2].color;
                 break;
