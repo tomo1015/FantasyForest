@@ -89,20 +89,48 @@ public class AICharacter : BaseCharacter
         {
             if(natureTowerCount > 0)
             {
-                //中立状態のタワーが一つでもある場合は
-                //中立タワーリストの一番上にあるタワーを目指すようにする
-                CaptureObject = natureTowerList[0].gameObject;
+                //中立タワーリストの中から距離が一番近いものを目指す
+                float nearDis = 0.0f;
+                foreach (GameObject natureTower in natureTowerList)
+                {
+                    float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
+                    if (nearDis == 0 || nearDis > distance)
+                    {
+                        nearDis = distance;
+                        CaptureObject = natureTower;
+                    }
+                }
             }
             else if(blueTowerCount < redTowerCount)
             {
                 //敵軍のタワーが自軍タワーより多いのであれば
-                //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す
+                //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す（タワーへの攻撃占領）
+                float nearDis = 0.0f;
+                foreach (GameObject redTower in redTowerList)
+                {
+                    float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
+                    if (nearDis == 0 || nearDis < distance)
+                    {
+                        nearDis = distance;
+                        CaptureObject = redTower;
+                    }
+                }
             }
             else
             {
                 //自軍タワーが多い場合は自軍占領タワーリストから
                 //現在の位置に一番近いものをターゲットとする（タワーの防衛）
-
+                //中立タワーリストの中から距離が一番近いものを目指す
+                float nearDis = 0.0f;
+                foreach (GameObject blueTower in blueTowerList)
+                {
+                    float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
+                    if (nearDis == 0 || nearDis > distance)
+                    {
+                        nearDis = distance;
+                        CaptureObject = blueTower;
+                    }
+                }
             }
         }
 
@@ -112,6 +140,11 @@ public class AICharacter : BaseCharacter
         //移動速度設定
         agent.speed = 50;
         agent.acceleration = 50;
+        agent.velocity = new Vector3(50,0,50);
+        agent.isStopped = false;
+
+        //移動アニメーション再生開始
+        base.PlayAnimation(ANIMATION_STATE.RUN);
 
         //移動するべきタワーが見つかったので、AIのステートを移動に変更
         ai_status = AI_STATUS.MOVE;
@@ -127,15 +160,23 @@ public class AICharacter : BaseCharacter
         //途中で敵と遭遇した場合（コライダーに入った場合）はターゲットを変更する。
         //ターゲットに近づいた場合のみ攻撃ステートへ変更
 
+        //占領範囲内ではないが目的地に近づいた場合は
+        //走るアニメーションから歩行アニメーションへ変更
+        Vector3 TowerDiffPosition = CaptureObject.transform.position - agent.transform.position;
+        if (Vector3.Magnitude(TowerDiffPosition) < 50)
+        {
+            base.StopAnimation(ANIMATION_STATE.RUN);
+        }
         //タワーに近づいた場合（占領範囲内）は
         //移動を停止し、占領ステートへ変更
-        Vector3 TowerDiffPosition = CaptureObject.transform.position - agent.transform.position;
-        if(Vector3.Magnitude(TowerDiffPosition) < 30)
+
+        if (Vector3.Magnitude(TowerDiffPosition) < 30)
         {
             //タワー占領範囲内
             agent.speed = 0;
             agent.acceleration = 0;
-            agent.updatePosition = false;
+            agent.velocity = Vector3.zero;
+            agent.isStopped = true;
 
             ai_status = AI_STATUS.CAPTURE;
         }
