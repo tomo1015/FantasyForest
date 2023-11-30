@@ -11,12 +11,29 @@ public class AICharacter : BaseCharacter
     //AIの状態管理
     [SerializeField]
     private AI_STATUS ai_status;
+    public AI_STATUS getAiStatus() { return ai_status; }
+    public void setAiStatus(AI_STATUS setStatus) { ai_status = setStatus; }
 
     //塔の管理クラス
     public TowerManager towerManager;
 
     //抽選で確定させた占領する塔のオブジェクト
-    private GameObject CaptureObject;
+    [SerializeField]
+    private GameObject CaptureObject = null;
+    public GameObject getCaptureObject() { return CaptureObject; }
+    public void setCaptureObject(GameObject value) { CaptureObject = value; }
+
+    //攻撃範囲内に入ってきたキャラクターオブジェクト
+    [SerializeField]
+    private GameObject AttackObject = null;
+    public GameObject getAttackObject() { return AttackObject; }
+    public void setAttackObject(GameObject value) { AttackObject = value; }
+
+    //攻撃状態かどうか
+    private bool isAttackMode = false;
+    public bool getIsAttackMode() { return isAttackMode; }
+    public void setIsAttackMode(bool value) { isAttackMode = value; }
+
 
     protected override void Start()
     {
@@ -60,6 +77,7 @@ public class AICharacter : BaseCharacter
                 break;
             case AI_STATUS.ATTACK:
                 //攻撃処理実行
+                Attack();
                 break;
             default: 
                 break; 
@@ -159,26 +177,36 @@ public class AICharacter : BaseCharacter
         //基本的には探索時に見つけたタワーへ向かう
         //途中で敵と遭遇した場合（コライダーに入った場合）はターゲットを変更する。
         //ターゲットに近づいた場合のみ攻撃ステートへ変更
-
-        //占領範囲内ではないが目的地に近づいた場合は
-        //走るアニメーションから歩行アニメーションへ変更
-        Vector3 TowerDiffPosition = CaptureObject.transform.position - agent.transform.position;
-        if (Vector3.Magnitude(TowerDiffPosition) < 50)
+        if (isAttackMode)
         {
-            base.StopAnimation(ANIMATION_STATE.RUN);
+            //攻撃位置の方向へ設定
+            agent.SetDestination(AttackObject.transform.position);
+
+            //ステートを攻撃へ変更
+            ai_status = AI_STATUS.ATTACK;
         }
-        //タワーに近づいた場合（占領範囲内）は
-        //移動を停止し、占領ステートへ変更
-
-        if (Vector3.Magnitude(TowerDiffPosition) < 30)
+        else
         {
-            //タワー占領範囲内
-            agent.speed = 0;
-            agent.acceleration = 0;
-            agent.velocity = Vector3.zero;
-            agent.isStopped = true;
+            //占領範囲内ではないが目的地に近づいた場合は
+            //走るアニメーションから歩行アニメーションへ変更
+            Vector3 TowerDiffPosition = CaptureObject.transform.position - agent.transform.position;
+            if (Vector3.Magnitude(TowerDiffPosition) < 50)
+            {
+                base.StopAnimation(ANIMATION_STATE.RUN);
+            }
+            //タワーに近づいた場合（占領範囲内）は
+            //移動を停止し、占領ステートへ変更
 
-            ai_status = AI_STATUS.CAPTURE;
+            if (Vector3.Magnitude(TowerDiffPosition) < 30)
+            {
+                //タワー占領範囲内
+                agent.speed = 0;
+                agent.acceleration = 0;
+                agent.velocity = Vector3.zero;
+                agent.isStopped = true;
+
+                ai_status = AI_STATUS.CAPTURE;
+            }
         }
     }
 
@@ -192,6 +220,45 @@ public class AICharacter : BaseCharacter
         //AIのステートをタワー探索へ変更
         if(CaptureObject.GetComponent<Tower>().tower_color == team_color)
         {
+            ai_status = AI_STATUS.SEARCH;
+        }
+    }
+
+    /// <summary>
+    /// 攻撃処理
+    /// </summary>
+    private void Attack()
+    {
+        //対象のキャラクターに近づいたら、攻撃アニメーションを再生させる
+        Vector3 AttackDiffPosition = AttackObject.transform.position - agent.transform.position;
+        //TODO：攻撃範囲は装備している武器によって変わるものとする
+        if (Vector3.Magnitude(AttackDiffPosition) < 10)
+        {
+            //移動を停止
+            agent.speed = 0;
+            agent.acceleration = 0;
+            agent.velocity = Vector3.zero;
+            agent.isStopped = true;
+            base.StopAnimation(ANIMATION_STATE.RUN);
+
+            //攻撃アニメーション再生
+            base.PlayAnimation(ANIMATION_STATE.ATTACK);
+
+            //TODO：仮で攻撃
+            //相手側のHPを減らす
+            AttackObject.GetComponent<BaseCharacter>().WeponTakeDamege(WEPON.Sword);
+        }
+
+        //攻撃対象の敵が倒れた場合は攻撃アニメーションを停止してタワー探索処理へ
+        if(AttackObject.GetComponent<BaseCharacter>().getActive() == false) 
+        {
+            //攻撃アニメーション停止
+            base.StopAnimation(ANIMATION_STATE.ATTACK);
+            //攻撃対象リセット
+            isAttackMode = false;
+            AttackObject = null;
+
+            //タワー探索へステート変更
             ai_status = AI_STATUS.SEARCH;
         }
     }

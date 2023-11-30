@@ -9,7 +9,6 @@ public abstract class BaseCharacter : MonoBehaviour
     public TEAM_COLOR team_color;//チームカラー
 
     //キャラクター基本部分
-    [SerializeField]
     protected Rigidbody Rigidbody = null;
 
     //アニメーション
@@ -23,6 +22,13 @@ public abstract class BaseCharacter : MonoBehaviour
     private int current_hp;//現在HP
     private int max_hp;//最大HP
 
+    //見えない武器のゲームオブジェクト
+    private GameObject EquipWeponGameObject;
+
+    //装備する武器
+    public WEPON weponName;
+
+    [SerializeField]
     private bool isActive;//生存状態かどうか
 
     public bool getActive()
@@ -37,6 +43,10 @@ public abstract class BaseCharacter : MonoBehaviour
         Rigidbody = GetComponent<Rigidbody>();
         Animator = GetComponent<Animator>();
 
+        //指定の武器を装備させる
+        //装備させるためのオブジェクトを探索
+        //TODO：指定したキャラクターに対応した武器を装備させる
+
         //HPの設定
         max_hp = 100;
         current_hp = max_hp;
@@ -48,7 +58,8 @@ public abstract class BaseCharacter : MonoBehaviour
         //HPの処理
         if(current_hp <= 0)
         {
-            isActive = false; 
+            isActive = false;
+            gameObject.SetActive(false);
             //TODO：リスポーン管理クラスへ登録する
         }
     }
@@ -103,6 +114,29 @@ public abstract class BaseCharacter : MonoBehaviour
                 //Animator.SetBool(key_isDown, false);
                 break;
             default:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// どの武器によってダメージを受けたか
+    /// </summary>
+    /// <param name="takeWepon"></param>
+    public void WeponTakeDamege(WEPON takeWepon)
+    {
+        //受けた武器によってダメージを変化させる
+        switch (takeWepon)
+        {
+            case WEPON.NONE:
+                break;
+            case WEPON.Sword:
+                current_hp -= 2;
+                break;
+            case WEPON.Bow:
+                current_hp -= 1;
+                break;
+            case WEPON.Arrow:
+                current_hp -= 5;
                 break;
         }
     }

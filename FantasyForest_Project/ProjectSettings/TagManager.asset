@@ -5,8 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
-  - TEAM_BLUE
-  - TEAM_RED
+  - Wepon
+  - EquipWepon
+  - Character
   layers:
   - Default
   - TransparentFX
