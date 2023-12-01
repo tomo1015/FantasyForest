@@ -33,4 +33,11 @@ namespace Constants
         DOWN
     }
 
+    public enum WEPON
+    {
+        NONE = 0,
+        Sword, //åï
+        Bow,   //ã|Åiíºâ£ÇËÇ†ÇËÅj
+        Arrow, //ñÓ
+    }
 }
