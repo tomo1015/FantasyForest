@@ -23,6 +23,17 @@ namespace Constants
     }
 
     /// <summary>
+    /// キャラクターのステート
+    /// </summary>
+    public enum CHARACTER_STATUS
+    {
+        NONE,
+        ALIVE,//アクティブ状態
+        DEAD,//非アクティブ状態
+        RESPOWN_WAIT,//リスポーン待機中
+    }
+
+    /// <summary>
     /// アニメーションのステート
     /// </summary>
     public enum ANIMATION_STATE

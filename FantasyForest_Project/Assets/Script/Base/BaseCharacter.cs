@@ -8,6 +8,12 @@ public abstract class BaseCharacter : MonoBehaviour
     //チーム状態
     public TEAM_COLOR team_color;//チームカラー
 
+    //リスポーン管理クラス
+    [SerializeField]
+    private RespownManager respownManager;
+    //リスポーン内部時間
+    public int RespownTime = 0;
+
     //キャラクター基本部分
     protected Rigidbody Rigidbody = null;
 
@@ -36,6 +42,11 @@ public abstract class BaseCharacter : MonoBehaviour
         return isActive; 
     }
 
+    public void setActive(bool value)
+    {
+        isActive = value;
+    }
+
 
     protected virtual void Start()
     {
@@ -55,12 +66,15 @@ public abstract class BaseCharacter : MonoBehaviour
 
     protected virtual void Update()
     {
-        //HPの処理
+        //キャラクターのHP情報をチェック
         if(current_hp <= 0)
         {
+            //HPが0になったら各種判定に使っているアクティブ情報をFalse
             isActive = false;
+            //リスポーン管理クラスへ登録
+            respownManager.standRespownList.Add(gameObject);
+            //対象となったキャラオブジェクトを非アクティブ化
             gameObject.SetActive(false);
-            //TODO：リスポーン管理クラスへ登録する
         }
     }
 

@@ -229,28 +229,8 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void Attack()
     {
-        //対象のキャラクターに近づいたら、攻撃アニメーションを再生させる
-        Vector3 AttackDiffPosition = AttackObject.transform.position - agent.transform.position;
-        //TODO：攻撃範囲は装備している武器によって変わるものとする
-        if (Vector3.Magnitude(AttackDiffPosition) < 10)
-        {
-            //移動を停止
-            agent.speed = 0;
-            agent.acceleration = 0;
-            agent.velocity = Vector3.zero;
-            agent.isStopped = true;
-            base.StopAnimation(ANIMATION_STATE.RUN);
-
-            //攻撃アニメーション再生
-            base.PlayAnimation(ANIMATION_STATE.ATTACK);
-
-            //TODO：仮で攻撃
-            //相手側のHPを減らす
-            AttackObject.GetComponent<BaseCharacter>().WeponTakeDamege(WEPON.Sword);
-        }
-
         //攻撃対象の敵が倒れた場合は攻撃アニメーションを停止してタワー探索処理へ
-        if(AttackObject.GetComponent<BaseCharacter>().getActive() == false) 
+        if (AttackObject.GetComponent<BaseCharacter>().getActive() == false)
         {
             //攻撃アニメーション停止
             base.StopAnimation(ANIMATION_STATE.ATTACK);
@@ -260,6 +240,28 @@ public class AICharacter : BaseCharacter
 
             //タワー探索へステート変更
             ai_status = AI_STATUS.SEARCH;
+        }
+        else
+        {
+            //対象のキャラクターに近づいたら、攻撃アニメーションを再生させる
+            Vector3 AttackDiffPosition = AttackObject.transform.position - agent.transform.position;
+            //TODO：攻撃範囲は装備している武器によって変わるものとする
+            if (Vector3.Magnitude(AttackDiffPosition) < 10)
+            {
+                //移動を停止
+                agent.speed = 0;
+                agent.acceleration = 0;
+                agent.velocity = Vector3.zero;
+                agent.isStopped = true;
+                base.StopAnimation(ANIMATION_STATE.RUN);
+
+                //攻撃アニメーション再生
+                base.PlayAnimation(ANIMATION_STATE.ATTACK);
+
+                //TODO：仮で攻撃
+                //相手側のHPを減らす
+                AttackObject.GetComponent<BaseCharacter>().WeponTakeDamege(WEPON.Sword);
+            }
         }
     }
 }
