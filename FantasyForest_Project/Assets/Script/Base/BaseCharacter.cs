@@ -8,6 +8,8 @@ public abstract class BaseCharacter : MonoBehaviour
     //チーム状態
     public TEAM_COLOR team_color;//チームカラー
 
+    public Vector3 start_position;
+
     //リスポーン管理クラス
     [SerializeField]
     private RespownManager respownManager;
@@ -62,6 +64,9 @@ public abstract class BaseCharacter : MonoBehaviour
         max_hp = 100;
         current_hp = max_hp;
         isActive = true;
+
+        //初期位置の設定
+        start_position = gameObject.transform.position;
     }
 
     protected virtual void Update()

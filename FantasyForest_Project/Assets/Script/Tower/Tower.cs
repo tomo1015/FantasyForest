@@ -22,6 +22,10 @@ public class Tower : MonoBehaviour
     //塔の管理クラス
     public TowerManager towerManager;
 
+    public GameObject TowerRespownLocation;
+
+    public bool IsTargetTowerRespown;//タワーからリスポーンできるか
+
     //タワーのゲージ状態取得
     public float GetGaptureGauge()
     {

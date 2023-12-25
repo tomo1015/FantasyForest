@@ -924,6 +924,10 @@ PrefabInstance:
       propertyPath: towerManager
       value: 
       objectReference: {fileID: 1201979179}
+    - target: {fileID: -370899597265538085, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
+      propertyPath: IsTargetTowerRespown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5487773914432213837, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
       propertyPath: m_Name
       value: blue_tower (3)
@@ -1111,6 +1115,10 @@ PrefabInstance:
       propertyPath: towerManager
       value: 
       objectReference: {fileID: 1201979179}
+    - target: {fileID: -370899597265538085, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
+      propertyPath: IsTargetTowerRespown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5487773914432213837, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
       propertyPath: m_Name
       value: blue_tower (1)
@@ -1913,6 +1921,10 @@ PrefabInstance:
       propertyPath: towerManager
       value: 
       objectReference: {fileID: 1201979179}
+    - target: {fileID: -370899597265538085, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
+      propertyPath: IsTargetTowerRespown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5487773914432213837, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
       propertyPath: m_Name
       value: blue_tower (4)
@@ -2107,6 +2119,10 @@ PrefabInstance:
       propertyPath: towerManager
       value: 
       objectReference: {fileID: 1201979179}
+    - target: {fileID: -370899597265538085, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
+      propertyPath: IsTargetTowerRespown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5487773914432213837, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
       propertyPath: m_Name
       value: blue_tower (2)
@@ -2190,6 +2206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standRespownList: []
+  towerManager: {fileID: 0}
 --- !u!4 &1825747147
 Transform:
   m_ObjectHideFlags: 0
@@ -2222,6 +2239,10 @@ PrefabInstance:
       propertyPath: towerManager
       value: 
       objectReference: {fileID: 1201979179}
+    - target: {fileID: -370899597265538085, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
+      propertyPath: IsTargetTowerRespown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5487773914432213837, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
       propertyPath: m_Name
       value: blue_tower (5)
@@ -2548,6 +2569,10 @@ PrefabInstance:
       propertyPath: towerManager
       value: 
       objectReference: {fileID: 1201979179}
+    - target: {fileID: -370899597265538085, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
+      propertyPath: IsTargetTowerRespown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5487773914432213837, guid: d5b1f4aa9d4090f4aabac42d318b7513, type: 3}
       propertyPath: m_Name
       value: blue_tower
