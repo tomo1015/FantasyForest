@@ -8,6 +8,7 @@ TagManager:
   - Wepon
   - EquipWepon
   - Character
+  - Respown
   layers:
   - Default
   - TransparentFX
