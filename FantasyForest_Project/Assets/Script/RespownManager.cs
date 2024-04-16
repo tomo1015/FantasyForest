@@ -86,7 +86,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     /// <param name="towerList"></param>
     /// <param name="targetCharacter"></param>
     /// <returns></returns>
-    private Vector3 RespownTowerPosition(int towerCount = 0, List<GameObject> towerList, BaseCharacter targetCharacter)
+    private Vector3 RespownTowerPosition(int towerCount = 0, List<GameObject> towerList = null, BaseCharacter targetCharacter = null)
     {
         Vector3 respown_position = new Vector3(0, 0, 0);
         if (towerCount <= 0)
