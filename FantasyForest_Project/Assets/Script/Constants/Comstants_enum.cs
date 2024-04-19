@@ -20,6 +20,7 @@ namespace Constants
         CAPTURE,//è—Ì
         MOVE,//ˆÚ“®
         ATTACK,//UŒ‚
+        DEFENSE,//–h‰q
     }
 
     /// <summary>
