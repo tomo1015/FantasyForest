@@ -19,6 +19,8 @@ public class Tower : MonoBehaviour
     [SerializeField]
     private Material[] towerMaterials = new Material[3];
 
+    public Transform[] defensePatrolPosition;//巡回ポイント
+
     //塔の管理クラス
     public TowerManager towerManager;
 

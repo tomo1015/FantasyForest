@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Constants;
+using UnityEngine.UIElements.Experimental;
 
 public class RespownManager : SingletonMonoBehaviour<RespownManager>
 {
@@ -53,25 +54,32 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
                         //タワーの情報を取得
                         int redTowerCount = towerManager.getRedTowerCount();
                         List<GameObject> redTowerList = towerManager.getRedTowerList();
-
                         //赤チーム用のリスポーン位置確定
                         respown_position = RespownTowerPosition(redTowerCount, redTowerList, targetCharacter);
                         break;
                     case TEAM_COLOR.BLUE:
                         //青チーム用のリスポーン位置確定
+                        int blueTowerCount = towerManager.getRedTowerCount();
+                        List<GameObject> blueTowerList = towerManager.getRedTowerList();
+                        respown_position = RespownTowerPosition(blueTowerCount, blueTowerList, targetCharacter);
                         break;
                     default:
                         break;
                 }
 
                 //アクティブ状態にする
-                targetCharacter.start_position = respown_position;//リスポーン位置の設定
-                targetCharacter.setActive(true);
+                targetCharacter.transform.position = respown_position;//リスポーン位置の設定
+                targetCharacter.gameObject.SetActive(true);//オブジェクトの再表示
+
+                //キャラクターステータスの設定
+                targetCharacter.CharacterStatus();
+
                 targetCharacter.RespownTime = 0;//管理時間を0にリセット
 
                 //リスポーン対象リストから削除
                 standRespownList.Remove(standRespownList[i]);
-            } else
+            } 
+            else
             {
                 //リスポーンできない場合はカウンターを増やす
                 targetCharacter.RespownTime++;

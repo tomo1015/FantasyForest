@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Constants;
+using System;
 
 public class AICharacter : BaseCharacter
 {
@@ -19,9 +20,11 @@ public class AICharacter : BaseCharacter
 
     //抽選で確定させた占領する塔のオブジェクト
     [SerializeField]
-    private GameObject CaptureObject = null;
-    public GameObject getCaptureObject() { return CaptureObject; }
-    public void setCaptureObject(GameObject value) { CaptureObject = value; }
+    private GameObject CaptureTowerObject = null;
+    [SerializeField]
+    private GameObject DefenseTowerObject = null;
+    public GameObject getCaptureObject() { return CaptureTowerObject; }
+    public void setCaptureObject(GameObject value) { CaptureTowerObject = value; }
 
     //攻撃範囲内に入ってきたキャラクターオブジェクト
     [SerializeField]
@@ -35,11 +38,14 @@ public class AICharacter : BaseCharacter
     public void setIsAttackMode(bool value) { isAttackMode = value; }
 
 
+    //タワーの周りを回る用
+    private int PatrolCount = 0;
+
+
     protected override void Start()
     {
         //基本クラスの処理
         base.Start();
-
 
         //このクラスだけの処理
         agent = GetComponent<NavMeshAgent>();//ナビメッシュエージェント取得
@@ -79,6 +85,10 @@ public class AICharacter : BaseCharacter
                 //攻撃処理実行
                 Attack();
                 break;
+            case AI_STATUS.DEFENSE:
+                //防衛処理
+                defense();
+                break;
             default: 
                 break; 
         }
@@ -115,7 +125,7 @@ public class AICharacter : BaseCharacter
                     if (nearDis == 0 || nearDis > distance)
                     {
                         nearDis = distance;
-                        CaptureObject = natureTower;
+                        CaptureTowerObject = natureTower;
                     }
                 }
             }
@@ -130,7 +140,7 @@ public class AICharacter : BaseCharacter
                     if (nearDis == 0 || nearDis < distance)
                     {
                         nearDis = distance;
-                        CaptureObject = redTower;
+                        CaptureTowerObject = redTower;
                     }
                 }
             }
@@ -146,14 +156,14 @@ public class AICharacter : BaseCharacter
                     if (nearDis == 0 || nearDis > distance)
                     {
                         nearDis = distance;
-                        CaptureObject = blueTower;
+                        CaptureTowerObject = blueTower;
                     }
                 }
             }
         }
 
         //目指すタワーの位置を入力
-        agent.SetDestination(CaptureObject.transform.position);
+        agent.SetDestination(CaptureTowerObject.transform.position);
 
         //移動速度設定
         agent.speed = 50;
@@ -184,27 +194,41 @@ public class AICharacter : BaseCharacter
 
             //ステートを攻撃へ変更
             ai_status = AI_STATUS.ATTACK;
+
+            //ステートを変更したのでこれ以降の処理はなし
+            return;
         }
-        else
+
+        //占領範囲内ではないが目的地に近づいた場合は
+        //走るアニメーションから歩行アニメーションへ変更
+        Vector3 TowerDiffPosition = CaptureTowerObject.transform.position - agent.transform.position;
+        //タワーに近づいた場合（占領範囲内）は
+        //移動を停止し、占領ステートへ変更
+        if (Vector3.Magnitude(TowerDiffPosition) < 30)
         {
-            //占領範囲内ではないが目的地に近づいた場合は
-            //走るアニメーションから歩行アニメーションへ変更
-            Vector3 TowerDiffPosition = CaptureObject.transform.position - agent.transform.position;
-            if (Vector3.Magnitude(TowerDiffPosition) < 50)
+            //タワー占領範囲内
+            agent.speed = 0;
+            agent.acceleration = 0;
+            agent.velocity = Vector3.zero;
+            agent.isStopped = true;
+
+            //移動アニメーションを停止
+            base.StopAnimation(ANIMATION_STATE.RUN);
+
+            if (CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
             {
-                base.StopAnimation(ANIMATION_STATE.RUN);
+                //目的とするタワーが自軍のものならステータスを防衛状態へ変更
+                ai_status = AI_STATUS.DEFENSE;
+                DefenseTowerObject = CaptureTowerObject;//防衛用のタワーオブジェクトへ移動
+                CaptureTowerObject = null;//占領の目標のタワーオブジェクトを破棄
+
+                var defenseTower = DefenseTowerObject.GetComponent<Tower>();
+                //防衛状態に移動する際に移動位置を決める
+                agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
             }
-            //タワーに近づいた場合（占領範囲内）は
-            //移動を停止し、占領ステートへ変更
-
-            if (Vector3.Magnitude(TowerDiffPosition) < 30)
+            else
             {
-                //タワー占領範囲内
-                agent.speed = 0;
-                agent.acceleration = 0;
-                agent.velocity = Vector3.zero;
-                agent.isStopped = true;
-
+                //タワーが自軍のものでないならステータスを占領状態へ変更
                 ai_status = AI_STATUS.CAPTURE;
             }
         }
@@ -218,7 +242,7 @@ public class AICharacter : BaseCharacter
         //占領状態
         //ターゲットとした塔の占領が自軍のものになったら
         //AIのステートをタワー探索へ変更
-        if(CaptureObject.GetComponent<Tower>().tower_color == team_color)
+        if(CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
         {
             ai_status = AI_STATUS.SEARCH;
         }
@@ -262,6 +286,38 @@ public class AICharacter : BaseCharacter
                 //相手側のHPを減らす
                 AttackObject.GetComponent<BaseCharacter>().WeponTakeDamege(WEPON.Sword);
             }
+        }
+    }
+
+    /// <summary>
+    /// 防衛処理
+    /// </summary>
+    private void defense()
+    {
+        //防衛中の場合に自軍の防衛タワー数が一定数以下になったら、
+        //タワー探索処理へステートを変更
+
+
+        //タワーの周りを巡回するように防衛する
+        //巡回途中に敵キャラクターが攻撃範囲に入ったら、
+        //攻撃ステートへ変更する
+        var defenseTower = DefenseTowerObject.GetComponent<Tower>();
+        if (defenseTower.defensePatrolPosition.Length == 0)
+        {
+            //処理しない
+            return;
+        }
+
+        //移動速度設定
+        agent.speed = 25;
+        agent.acceleration = 50;
+        agent.isStopped = false;
+
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        {
+            //次の移動先
+            agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
+            PatrolCount = (PatrolCount + 1) % defenseTower.defensePatrolPosition.Length;
         }
     }
 }
