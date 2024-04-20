@@ -61,9 +61,7 @@ public abstract class BaseCharacter : MonoBehaviour
         //TODO：指定したキャラクターに対応した武器を装備させる
 
         //HPの設定
-        max_hp = 100;
-        current_hp = max_hp;
-        isActive = true;
+        CharacterStatus();
 
         //初期位置の設定
         start_position = gameObject.transform.position;
@@ -78,7 +76,8 @@ public abstract class BaseCharacter : MonoBehaviour
             isActive = false;
             //リスポーン管理クラスへ登録
             respownManager.standRespownList.Add(gameObject);
-            //対象となったキャラオブジェクトを非アクティブ化
+            //対象となったキャラオブジェクトをシーンから破棄
+            //Destroy(gameObject);
             gameObject.SetActive(false);
         }
     }
@@ -158,5 +157,15 @@ public abstract class BaseCharacter : MonoBehaviour
                 current_hp -= 5;
                 break;
         }
+    }
+
+    /// <summary>
+    /// キャラクター初期ステータスの設定
+    /// </summary>
+    public void CharacterStatus()
+    {
+        max_hp = 100;
+        current_hp = max_hp;
+        isActive = true;
     }
 }

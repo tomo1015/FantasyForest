@@ -1249,6 +1249,10 @@ PrefabInstance:
       value: Player (2)
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_TagString
       value: Character
       objectReference: {fileID: 0}
@@ -2262,7 +2266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   standRespownList: []
-  towerManager: {fileID: 0}
+  towerManager: {fileID: 1201979179}
 --- !u!4 &1825747147
 Transform:
   m_ObjectHideFlags: 0
