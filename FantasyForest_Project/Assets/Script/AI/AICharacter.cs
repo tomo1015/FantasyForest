@@ -33,6 +33,7 @@ public class AICharacter : BaseCharacter
     public void setAttackObject(GameObject value) { AttackObject = value; }
 
     //攻撃状態かどうか
+    [SerializeField]
     private bool isAttackMode = false;
     public bool getIsAttackMode() { return isAttackMode; }
     public void setIsAttackMode(bool value) { isAttackMode = value; }
@@ -40,7 +41,6 @@ public class AICharacter : BaseCharacter
 
     //タワーの周りを回る用
     private int PatrolCount = 0;
-
 
     protected override void Start()
     {
@@ -225,6 +225,14 @@ public class AICharacter : BaseCharacter
                 var defenseTower = DefenseTowerObject.GetComponent<Tower>();
                 //防衛状態に移動する際に移動位置を決める
                 agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
+
+                //防衛時の移動状態設定
+                agent.speed = 25;
+                agent.acceleration = 50;
+                agent.isStopped = false;
+
+                //移動アニメーション
+                base.PlayAnimation(ANIMATION_STATE.RUN);
             }
             else
             {
@@ -308,14 +316,10 @@ public class AICharacter : BaseCharacter
             return;
         }
 
-        //移動速度設定
-        agent.speed = 25;
-        agent.acceleration = 50;
-        agent.isStopped = false;
-
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        //待機ポイントに近づいたら
+        if (!agent.pathPending && agent.remainingDistance < 0.1f)
         {
-            //次の移動先
+            //次の移動先を決めて移動させる
             agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
             PatrolCount = (PatrolCount + 1) % defenseTower.defensePatrolPosition.Length;
         }
