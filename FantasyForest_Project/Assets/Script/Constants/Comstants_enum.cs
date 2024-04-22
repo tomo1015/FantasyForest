@@ -20,17 +20,7 @@ namespace Constants
         CAPTURE,//占領
         MOVE,//移動
         ATTACK,//攻撃
-    }
-
-    /// <summary>
-    /// キャラクターのステート
-    /// </summary>
-    public enum CHARACTER_STATUS
-    {
-        NONE,
-        ALIVE,//アクティブ状態
-        DEAD,//非アクティブ状態
-        RESPOWN_WAIT,//リスポーン待機中
+        DEFENSE,//防衛
     }
 
     /// <summary>
@@ -50,5 +40,16 @@ namespace Constants
         Sword, //剣
         Bow,   //弓（直殴りあり）
         Arrow, //矢
+    }
+
+    /// <summary>
+    /// キャラクターのタイプ
+    /// </summary>
+    public enum CHARACTER_TYPE
+    {
+        NONE,
+        CAT,
+        ELF,
+        GOLEM,
     }
 }

@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Constants;
+using UnityEngine.UIElements.Experimental;
+using System;
+
 public class RespownManager : SingletonMonoBehaviour<RespownManager>
 {
 
@@ -14,6 +18,9 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     //塔の管理クラス
     public TowerManager towerManager;
 
+    [SerializeField]
+    private List<GameObject> respownPosition;
+
     private Vector3 respown_position;
 
     // Start is called before the first frame update
@@ -25,11 +32,17 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     // Update is called once per frame
     void Update()
     {
-        Respown();
+        exeRespown();
     }
 
-    private void Respown()
+    /// <summary>
+    /// リスポーン実施処理
+    /// </summary>
+    private void exeRespown()
     {
+        //リスポーン対象がいないなら処理を行わないようにする
+        if (standRespownList.Count <= 0) { return; }
+
         //リスポーン対象クラスに登録されたキャラクター情報の取得
         //ゲームシーン内にあるタワーオブジェクトから
         //初期状態のチームカラーによって状態を振り分ける
@@ -37,49 +50,81 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
         {
             var targetCharacter = standRespownList[i].GetComponent<BaseCharacter>();
             if (targetCharacter.RespownTime >= RespownLimitTime)
-            {
-                //対象のキャラクターがリスポーン時間を満たしたら
-                if(targetCharacter.team_color == Constants.TEAM_COLOR.RED)
-                {
-                    //そのキャラクターが赤色のチームの場合
-                    //倒れた位置から一番遠いところのタワーからリスポーンするようにする
-                    //ただし中心のオブジェクトのタワーは対象外にする
-                    int redTowerCount = towerManager.getRedTowerCount();
-                    if (redTowerCount > 0)
-                    {
-                        //赤色のタワーリスト
-                        List<GameObject> redTowerList = towerManager.getRedTowerList();
-                        float nearDis = 0.0f;
-                        foreach (GameObject redTower in redTowerList)
-                        {
-                            if (!redTower.GetComponent<Tower>().IsTargetTowerRespown)
-                            {
-                                continue;
-                            }
+            {//対象のキャラクターがリスポーン時間を満たしたら
 
-                            //一番遠いものを見つける
-                            float distance = Vector3.Distance(redTower.transform.position, targetCharacter.transform.position);
-                            if (nearDis == 0 || nearDis > distance)
-                            {
-                                nearDis = distance;
-                                respown_position = redTower.GetComponent<Tower>().TowerRespownLocation.transform.position;
-                            }
-                        }
-                    }
+                switch (targetCharacter.team_color)
+                {
+                    case TEAM_COLOR.RED:
+                        //タワーの情報を取得
+                        int redTowerCount = towerManager.getRedTowerCount();
+                        List<GameObject> redTowerList = towerManager.getRedTowerList();
+                        //赤チーム用のリスポーン位置確定
+                        targetCharacter.transform.position = RespownTowerPosition(redTowerCount, redTowerList, targetCharacter);
+                        break;
+                    case TEAM_COLOR.BLUE:
+                        //青チーム用のリスポーン位置確定
+                        int blueTowerCount = towerManager.getRedTowerCount();
+                        List<GameObject> blueTowerList = towerManager.getRedTowerList();
+                        targetCharacter.transform.position = RespownTowerPosition(blueTowerCount, blueTowerList, targetCharacter);
+                        break;
+                    default:
+                        break;
                 }
 
                 //アクティブ状態にする
-                targetCharacter.start_position = respown_position;//リスポーン位置の設定
-                targetCharacter.setActive(true);
+                targetCharacter.gameObject.SetActive(true);//オブジェクトの再表示
+
+                //キャラクターステータスの設定
+                targetCharacter.CharacterStatus();
+
                 targetCharacter.RespownTime = 0;//管理時間を0にリセット
 
                 //リスポーン対象リストから削除
                 standRespownList.Remove(standRespownList[i]);
-            } else
+            } 
+            else
             {
                 //リスポーンできない場合はカウンターを増やす
                 targetCharacter.RespownTime++;
             }
         }
+    }
+
+    /// <summary>
+    /// タワーでのリスポーン位置を決定する
+    /// </summary>
+    /// <param name="towerCount"></param>
+    /// <param name="towerList"></param>
+    /// <param name="targetCharacter"></param>
+    /// <returns></returns>
+    private Vector3 RespownTowerPosition(int towerCount = 0, List<GameObject> towerList = null, BaseCharacter targetCharacter = null)
+    {
+        Vector3 respown_position = new Vector3(0, 0, 0);
+        if (towerCount <= 0)
+        {
+            //占領しているタワーが0ならタワーでのリスポーンはできないと判断
+            //TODO：この段階でのリスポーン位置は未定
+            UnityEngine.Random.InitState(DateTime.Now.Millisecond);//ランダムとするシード値を調整
+            var key = UnityEngine.Random.Range(1, 4);
+            return respownPosition[key].transform.position;
+        }
+
+        //倒れた位置から一番遠いところのタワーからリスポーンするようにする
+        //ただし中心のオブジェクトのタワーは対象外にする
+        float nearDis = 0.0f;
+        foreach (GameObject tower in towerList)
+        {
+            if (!tower.GetComponent<Tower>().IsTargetTowerRespown) { continue; }
+
+            //一番遠いものを見つける
+            float distance = Vector3.Distance(tower.transform.position, targetCharacter.transform.position);
+            if (nearDis == 0 || nearDis > distance)
+            {
+                nearDis = distance;
+                respown_position = tower.GetComponent<Tower>().TowerRespownLocation.transform.position;
+            }
+        }
+
+        return respown_position;
     }
 }

@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Player : BaseCharacter
 {
-    [SerializeField] private float speed = 0;//移動速度
-
     private Vector3 moveDirection;//移動方向
     private Vector3 moveVelocity;//移動量
     private Vector3 latestPosition;//直前のフレームにおける位置
@@ -49,7 +47,7 @@ public class Player : BaseCharacter
         moveDirection = new Vector3(moveX, 0, moveZ);
         moveDirection.Normalize();//正規化（斜めの距離が長くなるのを防ぐ）
 
-        moveVelocity = moveDirection * speed;
+        moveVelocity = moveDirection * getCharacterSpeed();
     }
 
     /// <summary>
