@@ -2515,6 +2515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
+  characterType: 2
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
@@ -2631,6 +2632,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 1
   start_position: {x: 0, y: 0, z: 0}
+  characterType: 1
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
@@ -3432,6 +3434,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
+  characterType: 3
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0

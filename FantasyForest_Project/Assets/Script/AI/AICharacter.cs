@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Constants;
 using System;
+using Unity.VisualScripting;
 
 public class AICharacter : BaseCharacter
 {
@@ -21,19 +22,21 @@ public class AICharacter : BaseCharacter
     //抽選で確定させた占領する塔のオブジェクト
     [SerializeField]
     private GameObject CaptureTowerObject = null;
-    [SerializeField]
-    private GameObject DefenseTowerObject = null;
     public GameObject getCaptureObject() { return CaptureTowerObject; }
     public void setCaptureObject(GameObject value) { CaptureTowerObject = value; }
 
-    //攻撃範囲内に入ってきたキャラクターオブジェクト
+    //キャラクターが防衛するタワーのオブジェクト
     [SerializeField]
+    private GameObject DefenseTowerObject = null;
+    public GameObject getDefenseTowerObject() {  return DefenseTowerObject; }
+    public void setDefenseTowerObject(GameObject value) { DefenseTowerObject = value;}
+
+    //攻撃範囲内に入ってきたキャラクターオブジェクト
     private GameObject AttackObject = null;
     public GameObject getAttackObject() { return AttackObject; }
     public void setAttackObject(GameObject value) { AttackObject = value; }
 
     //攻撃状態かどうか
-    [SerializeField]
     private bool isAttackMode = false;
     public bool getIsAttackMode() { return isAttackMode; }
     public void setIsAttackMode(bool value) { isAttackMode = value; }
@@ -70,8 +73,8 @@ public class AICharacter : BaseCharacter
                 ai_status = AI_STATUS.SEARCH;
                 break;
             case AI_STATUS.SEARCH:
-                TowerSearch();
                 //探索処理実行
+                TowerSearch();
                 break;
             case AI_STATUS.CAPTURE:
                 //占領処理実行
@@ -87,7 +90,7 @@ public class AICharacter : BaseCharacter
                 break;
             case AI_STATUS.DEFENSE:
                 //防衛処理
-                defense();
+                Defense();
                 break;
             default: 
                 break; 
@@ -166,8 +169,8 @@ public class AICharacter : BaseCharacter
         agent.SetDestination(CaptureTowerObject.transform.position);
 
         //移動速度設定
-        agent.speed = 50;
-        agent.acceleration = 50;
+        agent.speed = getCharacterSpeed();
+        agent.acceleration = getCharacterSpeed();
         agent.velocity = new Vector3(50,0,50);
         agent.isStopped = false;
 
@@ -199,12 +202,13 @@ public class AICharacter : BaseCharacter
             return;
         }
 
+
         //占領範囲内ではないが目的地に近づいた場合は
         //走るアニメーションから歩行アニメーションへ変更
         Vector3 TowerDiffPosition = CaptureTowerObject.transform.position - agent.transform.position;
         //タワーに近づいた場合（占領範囲内）は
         //移動を停止し、占領ステートへ変更
-        if (Vector3.Magnitude(TowerDiffPosition) < 30)
+        if (Vector3.Magnitude(TowerDiffPosition) < 50)
         {
             //タワー占領範囲内
             agent.speed = 0;
@@ -219,15 +223,19 @@ public class AICharacter : BaseCharacter
             {
                 //目的とするタワーが自軍のものならステータスを防衛状態へ変更
                 ai_status = AI_STATUS.DEFENSE;
+
                 DefenseTowerObject = CaptureTowerObject;//防衛用のタワーオブジェクトへ移動
                 CaptureTowerObject = null;//占領の目標のタワーオブジェクトを破棄
 
                 var defenseTower = DefenseTowerObject.GetComponent<Tower>();
+                
+                //タワーの防衛を行っているキャラクターリストへ入れる
+                defenseTower.defenseCharacterList.Add(gameObject);
                 //防衛状態に移動する際に移動位置を決める
                 agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
 
                 //防衛時の移動状態設定
-                agent.speed = 25;
+                agent.speed = getCharacterSpeed() / 2;//移動時のスピードの半分
                 agent.acceleration = 50;
                 agent.isStopped = false;
 
@@ -252,6 +260,11 @@ public class AICharacter : BaseCharacter
         //AIのステートをタワー探索へ変更
         if(CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
         {
+            agent.speed = 0;
+            agent.acceleration = 0;
+            agent.velocity = Vector3.zero;
+            agent.isStopped = true;
+
             ai_status = AI_STATUS.SEARCH;
         }
     }
@@ -300,8 +313,10 @@ public class AICharacter : BaseCharacter
     /// <summary>
     /// 防衛処理
     /// </summary>
-    private void defense()
+    private void Defense()
     {
+        var defenseTower = DefenseTowerObject.GetComponent<Tower>();
+
         //防衛中の場合に自軍の防衛タワー数が一定数以下になったら、
         //タワー探索処理へステートを変更
 
@@ -309,7 +324,7 @@ public class AICharacter : BaseCharacter
         //タワーの周りを巡回するように防衛する
         //巡回途中に敵キャラクターが攻撃範囲に入ったら、
         //攻撃ステートへ変更する
-        var defenseTower = DefenseTowerObject.GetComponent<Tower>();
+
         if (defenseTower.defensePatrolPosition.Length == 0)
         {
             //処理しない
