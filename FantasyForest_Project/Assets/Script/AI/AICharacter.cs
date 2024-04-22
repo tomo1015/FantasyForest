@@ -320,13 +320,9 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = natureTower;
                 }
             }
-        }
-
-
-        if (blueTowerCount < redTowerCount)
+        } 
+        else if(blueTowerCount < redTowerCount)
         {
-            //敵軍のタワーが自軍タワーより多いのであれば
-            //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す（タワーへの攻撃占領）
             float nearDis = 0.0f;
             foreach (GameObject redTower in redTowerList)
             {
@@ -337,9 +333,8 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = redTower;
                 }
             }
-        }
-
-        if (blueTowerCount >= redTowerCount)
+        } 
+        else
         {
             //自軍タワーが多い場合は自軍占領タワーリストから
             //現在の位置に一番近いものをターゲットとする（タワーの防衛）
@@ -386,10 +381,8 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = natureTower;
                 }
             }
-        }
-
-
-        if(redTowerCount < blueTowerCount)
+        } 
+        else if(redTowerCount < blueTowerCount)
         {
             //敵軍のタワーが自軍タワーより多いのであれば
             //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す（タワーへの攻撃占領）
@@ -403,9 +396,8 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = redTower;
                 }
             }
-        }
-
-        if(redTowerCount >= blueTowerCount)
+        } 
+        else
         {
             //自軍タワーが多い場合は自軍占領タワーリストから
             //現在の位置に一番近いものをターゲットとする（タワーの防衛）
