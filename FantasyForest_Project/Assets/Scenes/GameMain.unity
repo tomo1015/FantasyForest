@@ -1508,7 +1508,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400056, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 75.8
+      value: 349
       objectReference: {fileID: 0}
     - target: {fileID: 400056, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1516,7 +1516,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400056, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -20.8
+      value: -21
       objectReference: {fileID: 0}
     - target: {fileID: 400056, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2518,6 +2518,7 @@ MonoBehaviour:
   characterType: 2
   respownManager: {fileID: 1825747146}
   RespownTime: 0
+  Animator: {fileID: 0}
   weponName: 0
   ai_status: 0
   towerManager: {fileID: 1201979179}
@@ -2629,11 +2630,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b24ff30319f31004fb75100887dc33d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team_color: 1
+  team_color: 0
   start_position: {x: 0, y: 0, z: 0}
   characterType: 1
   respownManager: {fileID: 1825747146}
   RespownTime: 0
+  Animator: {fileID: 0}
   weponName: 0
 --- !u!1 &1578234782
 GameObject:
@@ -3434,6 +3436,7 @@ MonoBehaviour:
   characterType: 3
   respownManager: {fileID: 1825747146}
   RespownTime: 0
+  Animator: {fileID: 0}
   weponName: 0
   ai_status: 0
   towerManager: {fileID: 1201979179}
@@ -3757,11 +3760,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd58570edd7cc944c9644ebc0add2712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blueCharacterList:
-  - {fileID: 1457179419}
-  - {fileID: 1873806735}
-  towerManager: {fileID: 1201979179}
-  captureTowerCount: 0
 --- !u!1 &2060009991
 GameObject:
   m_ObjectHideFlags: 0

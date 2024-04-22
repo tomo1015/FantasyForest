@@ -117,6 +117,9 @@ public class AICharacter : BaseCharacter
                 break;
         }
 
+        //移動アニメーション再生開始
+        base.PlayAnimation(ANIMATION_STATE.RUN);
+
         //目指すタワーの位置を入力
         agent.SetDestination(CaptureTowerObject.transform.position);
 
@@ -125,9 +128,6 @@ public class AICharacter : BaseCharacter
         agent.acceleration = getCharacterSpeed();
         agent.velocity = new Vector3(50,0,50);
         agent.isStopped = false;
-
-        //移動アニメーション再生開始
-        base.PlayAnimation(ANIMATION_STATE.RUN);
 
         //移動するべきタワーが見つかったので、AIのステートを移動に変更
         ai_status = AI_STATUS.MOVE;
@@ -162,17 +162,20 @@ public class AICharacter : BaseCharacter
         //移動を停止し、占領ステートへ変更
         if (Vector3.Magnitude(TowerDiffPosition) < 30)
         {
+            //移動アニメーションを停止
+            base.StopAnimation(ANIMATION_STATE.RUN);
+
             //タワー占領範囲内
             agent.speed = 0;
             agent.acceleration = 0;
             agent.velocity = Vector3.zero;
             agent.isStopped = true;
 
-            //移動アニメーションを停止
-            base.StopAnimation(ANIMATION_STATE.RUN);
-
             if (CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
             {
+                //移動アニメーション
+                base.PlayAnimation(ANIMATION_STATE.RUN);
+
                 //目的とするタワーが自軍のものならステータスを防衛状態へ変更
                 ai_status = AI_STATUS.DEFENSE;
 
@@ -191,8 +194,7 @@ public class AICharacter : BaseCharacter
                 agent.acceleration = 50;
                 agent.isStopped = false;
 
-                //移動アニメーション
-                base.PlayAnimation(ANIMATION_STATE.RUN);
+
             }
             else
             {
