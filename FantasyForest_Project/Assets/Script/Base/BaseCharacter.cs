@@ -7,8 +7,10 @@ public abstract class BaseCharacter : MonoBehaviour
 {
     //チーム状態
     public TEAM_COLOR team_color;//チームカラー
-
     public Vector3 start_position;
+
+    //キャラクターの情報
+    public CHARACTER_TYPE characterType;
 
     //リスポーン管理クラス
     [SerializeField]
@@ -30,14 +32,20 @@ public abstract class BaseCharacter : MonoBehaviour
     private int current_hp;//現在HP
     private int max_hp;//最大HP
 
+    //速度
+    private float speed;
+    public float getCharacterSpeed() { return speed; }
+    public void setCharacterSpeed(float value) {  speed = value; }
+
     //見えない武器のゲームオブジェクト
     private GameObject EquipWeponGameObject;
 
     //装備する武器
-    public WEPON weponName;
-
     [SerializeField]
-    private bool isActive;//生存状態かどうか
+    private WEPON weponName;
+
+    //生存状態かどうか
+    private bool isActive;
 
     public bool getActive()
     {
@@ -164,8 +172,27 @@ public abstract class BaseCharacter : MonoBehaviour
     /// </summary>
     public void CharacterStatus()
     {
-        max_hp = 100;
-        current_hp = max_hp;
-        isActive = true;
+        //キャラクターのタイプによって設定する情報を変える
+        switch (characterType)
+        {
+            case CHARACTER_TYPE.CAT:
+                max_hp = 100;//最大HP
+                speed = 100;
+                break;
+            case CHARACTER_TYPE.ELF:
+                max_hp = 150;
+                speed = 50;
+                break;
+            case CHARACTER_TYPE.GOLEM:
+                max_hp = 300;
+                speed = 30;
+                break;
+            default:
+                break;
+        }
+
+        isActive = true;//アクティブ状態
+        current_hp = max_hp;//現在HP
+
     }
 }

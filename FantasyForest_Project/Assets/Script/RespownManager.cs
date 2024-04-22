@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Constants;
 using UnityEngine.UIElements.Experimental;
+using System;
 
 public class RespownManager : SingletonMonoBehaviour<RespownManager>
 {
@@ -16,6 +17,9 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
 
     //塔の管理クラス
     public TowerManager towerManager;
+
+    [SerializeField]
+    private List<GameObject> respownPosition;
 
     private Vector3 respown_position;
 
@@ -55,20 +59,19 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
                         int redTowerCount = towerManager.getRedTowerCount();
                         List<GameObject> redTowerList = towerManager.getRedTowerList();
                         //赤チーム用のリスポーン位置確定
-                        respown_position = RespownTowerPosition(redTowerCount, redTowerList, targetCharacter);
+                        targetCharacter.transform.position = RespownTowerPosition(redTowerCount, redTowerList, targetCharacter);
                         break;
                     case TEAM_COLOR.BLUE:
                         //青チーム用のリスポーン位置確定
                         int blueTowerCount = towerManager.getRedTowerCount();
                         List<GameObject> blueTowerList = towerManager.getRedTowerList();
-                        respown_position = RespownTowerPosition(blueTowerCount, blueTowerList, targetCharacter);
+                        targetCharacter.transform.position = RespownTowerPosition(blueTowerCount, blueTowerList, targetCharacter);
                         break;
                     default:
                         break;
                 }
 
                 //アクティブ状態にする
-                targetCharacter.transform.position = respown_position;//リスポーン位置の設定
                 targetCharacter.gameObject.SetActive(true);//オブジェクトの再表示
 
                 //キャラクターステータスの設定
@@ -101,7 +104,9 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
         {
             //占領しているタワーが0ならタワーでのリスポーンはできないと判断
             //TODO：この段階でのリスポーン位置は未定
-            return respown_position;
+            UnityEngine.Random.InitState(DateTime.Now.Millisecond);//ランダムとするシード値を調整
+            var key = UnityEngine.Random.Range(1, 4);
+            return respownPosition[key].transform.position;
         }
 
         //倒れた位置から一番遠いところのタワーからリスポーンするようにする

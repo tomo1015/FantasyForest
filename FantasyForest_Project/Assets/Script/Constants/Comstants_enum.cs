@@ -24,17 +24,6 @@ namespace Constants
     }
 
     /// <summary>
-    /// キャラクターのステート
-    /// </summary>
-    public enum CHARACTER_STATUS
-    {
-        NONE,
-        ALIVE,//アクティブ状態
-        DEAD,//非アクティブ状態
-        RESPOWN_WAIT,//リスポーン待機中
-    }
-
-    /// <summary>
     /// アニメーションのステート
     /// </summary>
     public enum ANIMATION_STATE
@@ -51,5 +40,16 @@ namespace Constants
         Sword, //剣
         Bow,   //弓（直殴りあり）
         Arrow, //矢
+    }
+
+    /// <summary>
+    /// キャラクターのタイプ
+    /// </summary>
+    public enum CHARACTER_TYPE
+    {
+        NONE,
+        CAT,
+        ELF,
+        GOLEM,
     }
 }

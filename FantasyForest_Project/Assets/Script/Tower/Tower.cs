@@ -5,7 +5,9 @@ using Constants;
 
 public class Tower : MonoBehaviour
 {
-    public TEAM_COLOR tower_color;
+    public TEAM_COLOR tower_color;//タワーを占領している軍
+
+    //タワーの状態
     private float captureGauge = 0;//占領状態を表すゲージ
     List<GameObject> blueCharaList = new List<GameObject>();//青軍のキャラリスト
     List<GameObject> redCharaList = new List<GameObject>();//赤軍のキャラリスト
@@ -15,6 +17,9 @@ public class Tower : MonoBehaviour
     private float redCaptureLimit = -100;//赤チームのものとして占領できるゲージ上限 TODO：テスト
     private float naturalCaptureLimit = 0;//中立のものとして扱うゲージ上限
     private float captureGaugeValue = 0.1f;//占領中の基本ゲージ速度
+
+    //防衛中のキャラクター情報
+    public List<GameObject> defenseCharacterList = new List<GameObject>();
 
     [SerializeField]
     private Material[] towerMaterials = new Material[3];
@@ -53,6 +58,9 @@ public class Tower : MonoBehaviour
 
     private void SetUpTower()
     {
+        //
+
+        //初期設定のタワーによってタワーの色を変更
         switch (tower_color)
         {
             //TODO：メモリ気を付ける
