@@ -10,6 +10,8 @@ public class AICharacter : BaseCharacter
 {
     //ナビメッシュエージェント
     private NavMeshAgent agent;
+    public NavMeshAgent getNavmeshAgent() {  return agent; }
+
     //AIの状態管理
     [SerializeField]
     private AI_STATUS ai_status;
@@ -111,6 +113,8 @@ public class AICharacter : BaseCharacter
             case TEAM_COLOR.RED:
                 RedTowerSearch();
                 break;
+            default:
+                break;
         }
 
         //目指すタワーの位置を入力
@@ -156,7 +160,7 @@ public class AICharacter : BaseCharacter
         Vector3 TowerDiffPosition = CaptureTowerObject.transform.position - agent.transform.position;
         //タワーに近づいた場合（占領範囲内）は
         //移動を停止し、占領ステートへ変更
-        if (Vector3.Magnitude(TowerDiffPosition) < 50)
+        if (Vector3.Magnitude(TowerDiffPosition) < 30)
         {
             //タワー占領範囲内
             agent.speed = 0;
@@ -386,10 +390,8 @@ public class AICharacter : BaseCharacter
                 {
                     nearDis = distance;
                     CaptureTowerObject = natureTower;
-                    break;
                 }
             }
-            return;
         }
 
 
@@ -405,10 +407,8 @@ public class AICharacter : BaseCharacter
                 {
                     nearDis = distance;
                     CaptureTowerObject = redTower;
-                    break;
                 }
             }
-            return;
         }
 
         if(redTowerCount >= blueTowerCount)
@@ -424,10 +424,8 @@ public class AICharacter : BaseCharacter
                 {
                     nearDis = distance;
                     CaptureTowerObject = blueTower;
-                    break;
                 }
             }
-            return;
         }
     }
 }

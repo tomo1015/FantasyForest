@@ -2519,7 +2519,6 @@ MonoBehaviour:
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
-  isActive: 0
   ai_status: 0
   towerManager: {fileID: 1201979179}
   CaptureTowerObject: {fileID: 0}
@@ -2636,8 +2635,6 @@ MonoBehaviour:
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
-  isActive: 0
-  speed: 50
 --- !u!1 &1578234782
 GameObject:
   m_ObjectHideFlags: 0
@@ -3438,7 +3435,6 @@ MonoBehaviour:
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
-  isActive: 0
   ai_status: 0
   towerManager: {fileID: 1201979179}
   CaptureTowerObject: {fileID: 0}
@@ -3733,7 +3729,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2011888040
 Transform:
   m_ObjectHideFlags: 0
