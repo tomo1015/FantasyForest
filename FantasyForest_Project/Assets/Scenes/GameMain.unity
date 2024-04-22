@@ -2515,10 +2515,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
+  characterType: 2
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
-  isActive: 0
   ai_status: 0
   towerManager: {fileID: 1201979179}
   CaptureTowerObject: {fileID: 0}
@@ -2631,11 +2631,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 1
   start_position: {x: 0, y: 0, z: 0}
+  characterType: 1
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
-  isActive: 0
-  speed: 50
 --- !u!1 &1578234782
 GameObject:
   m_ObjectHideFlags: 0
@@ -3432,10 +3431,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
+  characterType: 3
   respownManager: {fileID: 1825747146}
   RespownTime: 0
   weponName: 0
-  isActive: 0
   ai_status: 0
   towerManager: {fileID: 1201979179}
   CaptureTowerObject: {fileID: 0}
@@ -3730,7 +3729,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2011888040
 Transform:
   m_ObjectHideFlags: 0
