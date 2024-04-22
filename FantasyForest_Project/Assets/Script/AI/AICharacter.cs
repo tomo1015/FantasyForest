@@ -318,10 +318,8 @@ public class AICharacter : BaseCharacter
                 {
                     nearDis = distance;
                     CaptureTowerObject = natureTower;
-                    break;
                 }
             }
-            return;
         }
 
 
@@ -337,10 +335,8 @@ public class AICharacter : BaseCharacter
                 {
                     nearDis = distance;
                     CaptureTowerObject = redTower;
-                    break;
                 }
             }
-            return;
         }
 
         if (blueTowerCount >= redTowerCount)
@@ -356,10 +352,8 @@ public class AICharacter : BaseCharacter
                 {
                     nearDis = distance;
                     CaptureTowerObject = blueTower;
-                    break;
                 }
             }
-            return;
         }
     }
 
