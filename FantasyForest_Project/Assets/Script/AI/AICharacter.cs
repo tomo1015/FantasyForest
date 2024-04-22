@@ -102,67 +102,15 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void TowerSearch()
     {
-        //タワーのカウント数
-        int blueTowerCount = towerManager.getBlueTowerCount();
-        int redTowerCount = towerManager.getRedTowerCount();
-        int natureTowerCount = towerManager.getNatureTowerCount();
-
-        //タワーオブジェクトそのもののデータ
-        List<GameObject> blueTowerList = towerManager.getBlueTowerList();
-        List<GameObject> redTowerList = towerManager.getRedTowerList();
-        List<GameObject> natureTowerList = towerManager.getNatureTowerList();
-        //キャラクターそのもの現在位置
-        Vector3 nowPosition = agent.transform.position;
-
-        //タワー全体の管理クラスの情報
-        //キャラクターの所属軍が青軍だった場合
-        if (team_color == TEAM_COLOR.BLUE)
+        //キャラクターの所属軍によって処理が変わる
+        switch (team_color)
         {
-            if(natureTowerCount > 0)
-            {
-                //中立タワーリストの中から距離が一番近いものを目指す
-                float nearDis = 0.0f;
-                foreach (GameObject natureTower in natureTowerList)
-                {
-                    float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
-                    if (nearDis == 0 || nearDis > distance)
-                    {
-                        nearDis = distance;
-                        CaptureTowerObject = natureTower;
-                    }
-                }
-            }
-            else if(blueTowerCount < redTowerCount)
-            {
-                //敵軍のタワーが自軍タワーより多いのであれば
-                //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す（タワーへの攻撃占領）
-                float nearDis = 0.0f;
-                foreach (GameObject redTower in redTowerList)
-                {
-                    float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
-                    if (nearDis == 0 || nearDis < distance)
-                    {
-                        nearDis = distance;
-                        CaptureTowerObject = redTower;
-                    }
-                }
-            }
-            else
-            {
-                //自軍タワーが多い場合は自軍占領タワーリストから
-                //現在の位置に一番近いものをターゲットとする（タワーの防衛）
-                //中立タワーリストの中から距離が一番近いものを目指す
-                float nearDis = 0.0f;
-                foreach (GameObject blueTower in blueTowerList)
-                {
-                    float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
-                    if (nearDis == 0 || nearDis > distance)
-                    {
-                        nearDis = distance;
-                        CaptureTowerObject = blueTower;
-                    }
-                }
-            }
+            case TEAM_COLOR.BLUE:
+                BlueTowerSearch();
+                break;
+            case TEAM_COLOR.RED:
+                RedTowerSearch();
+                break;
         }
 
         //目指すタワーの位置を入力
@@ -337,6 +285,149 @@ public class AICharacter : BaseCharacter
             //次の移動先を決めて移動させる
             agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
             PatrolCount = (PatrolCount + 1) % defenseTower.defensePatrolPosition.Length;
+        }
+    }
+
+    /// <summary>
+    /// 青軍のタワー探索処理
+    /// </summary>
+    private void BlueTowerSearch()
+    {
+        //タワーのカウント数
+        int blueTowerCount = towerManager.getBlueTowerCount();
+        int redTowerCount = towerManager.getRedTowerCount();
+        int natureTowerCount = towerManager.getNatureTowerCount();
+
+        //タワーオブジェクトそのもののデータ
+        List<GameObject> blueTowerList = towerManager.getBlueTowerList();
+        List<GameObject> redTowerList = towerManager.getRedTowerList();
+        List<GameObject> natureTowerList = towerManager.getNatureTowerList();
+
+        if (natureTowerCount > 0)
+        {
+            //中立タワーリストの中から距離が一番近いものを目指す
+            float nearDis = 0.0f;
+            foreach (GameObject natureTower in natureTowerList)
+            {
+                float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
+                if (nearDis == 0 || nearDis > distance)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = natureTower;
+                    break;
+                }
+            }
+            return;
+        }
+
+
+        if (blueTowerCount < redTowerCount)
+        {
+            //敵軍のタワーが自軍タワーより多いのであれば
+            //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す（タワーへの攻撃占領）
+            float nearDis = 0.0f;
+            foreach (GameObject redTower in redTowerList)
+            {
+                float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
+                if (nearDis == 0 || nearDis < distance)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = redTower;
+                    break;
+                }
+            }
+            return;
+        }
+
+        if (blueTowerCount >= redTowerCount)
+        {
+            //自軍タワーが多い場合は自軍占領タワーリストから
+            //現在の位置に一番近いものをターゲットとする（タワーの防衛）
+            //中立タワーリストの中から距離が一番近いものを目指す
+            float nearDis = 0.0f;
+            foreach (GameObject blueTower in blueTowerList)
+            {
+                float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
+                if (nearDis == 0 || nearDis > distance)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = blueTower;
+                    break;
+                }
+            }
+            return;
+        }
+    }
+
+
+    /// <summary>
+    /// 赤軍のタワー探索処理
+    /// </summary>
+    private void RedTowerSearch()
+    {
+        //タワーのカウント数
+        int blueTowerCount = towerManager.getBlueTowerCount();
+        int redTowerCount = towerManager.getRedTowerCount();
+        int natureTowerCount = towerManager.getNatureTowerCount();
+
+        //タワーオブジェクトそのもののデータ
+        List<GameObject> blueTowerList = towerManager.getBlueTowerList();
+        List<GameObject> redTowerList = towerManager.getRedTowerList();
+        List<GameObject> natureTowerList = towerManager.getNatureTowerList();
+
+        if (natureTowerCount > 0)
+        {
+            //中立タワーリストの中から距離が一番近いものを目指す
+            float nearDis = 0.0f;
+            foreach (GameObject natureTower in natureTowerList)
+            {
+                float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
+                if (nearDis == 0 || nearDis > distance)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = natureTower;
+                    break;
+                }
+            }
+            return;
+        }
+
+
+        if(redTowerCount < blueTowerCount)
+        {
+            //敵軍のタワーが自軍タワーより多いのであれば
+            //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す（タワーへの攻撃占領）
+            float nearDis = 0.0f;
+            foreach (GameObject redTower in redTowerList)
+            {
+                float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
+                if (nearDis == 0 || nearDis < distance)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = redTower;
+                    break;
+                }
+            }
+            return;
+        }
+
+        if(redTowerCount >= blueTowerCount)
+        {
+            //自軍タワーが多い場合は自軍占領タワーリストから
+            //現在の位置に一番近いものをターゲットとする（タワーの防衛）
+            //中立タワーリストの中から距離が一番近いものを目指す
+            float nearDis = 0.0f;
+            foreach (GameObject blueTower in blueTowerList)
+            {
+                float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
+                if (nearDis == 0 || nearDis > distance)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = blueTower;
+                    break;
+                }
+            }
+            return;
         }
     }
 }
