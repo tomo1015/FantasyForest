@@ -14,16 +14,6 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
     [SerializeField]
     List<GameObject> natureTowerList = new List<GameObject>();
 
-    [SerializeField]
-    private int redTower = 0;
-    [SerializeField]
-    private int blueTower = 0;
-    [SerializeField]
-    private int natureTower = 0;
-
-    public int getRedTowerCount() { return redTower; }
-    public int getBlueTowerCount() { return blueTower; }
-    public int getNatureTowerCount() { return natureTower; }
 
     public List<GameObject> getBlueTowerList() { return blueTowerList; }
     public List<GameObject> getRedTowerList() { return redTowerList; }
@@ -37,17 +27,14 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
             switch (towerList[i].GetComponent<Tower>().tower_color)
             {
                 case Constants.TEAM_COLOR.RED:
-                    redTower++;
                     redTowerList.Add(towerList[i]);
                     break;
 
                 case Constants.TEAM_COLOR.BLUE:
-                    blueTower++;
                     blueTowerList.Add(towerList[i]);
                     break;
 
                 case Constants.TEAM_COLOR.NATURAL:
-                    natureTower++;
                     natureTowerList.Add(towerList[i]);
                     break;
             }

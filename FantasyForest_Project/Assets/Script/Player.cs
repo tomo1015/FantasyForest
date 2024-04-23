@@ -47,7 +47,7 @@ public class Player : BaseCharacter
         moveDirection = new Vector3(moveX, 0, moveZ);
         moveDirection.Normalize();//正規化（斜めの距離が長くなるのを防ぐ）
 
-        moveVelocity = moveDirection * getCharacterSpeed();
+        moveVelocity = moveDirection * getCharacterSpeed() / 2;
     }
 
     /// <summary>

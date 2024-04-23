@@ -8,15 +8,28 @@ public class Tower : MonoBehaviour
     public TEAM_COLOR tower_color;//タワーを占領している軍
 
     //タワーの状態
-    private float captureGauge = 0;//占領状態を表すゲージ
+    private float captureGauge = 500;//占領状態を表すゲージ
+
     List<GameObject> blueCharaList = new List<GameObject>();//青軍のキャラリスト
+    public List<GameObject> getBlueCharaList() { return blueCharaList; }
+
     List<GameObject> redCharaList = new List<GameObject>();//赤軍のキャラリスト
+    public List<GameObject> getRedCharaList() { return redCharaList; }
+
     private bool is_capture_blue = false;//青チームが占領しているフラグ
     private bool is_capture_red = false;//赤チームが占領しているフラグ
-    private float blueCaptureLimit = 100;//青チームのものとして占領できるゲージ上限 TODO：テスト
-    private float redCaptureLimit = -100;//赤チームのものとして占領できるゲージ上限 TODO：テスト
-    private float naturalCaptureLimit = 0;//中立のものとして扱うゲージ上限
+    private float blueCaptureLimit = 1000;//青チームのものとして占領できるゲージ上限 TODO：テスト
+    private float redCaptureLimit = 0;//赤チームのものとして占領できるゲージ上限 TODO：テスト
+    private float naturalCaptureLimit = 500;//中立のものとして扱うゲージ上限
     private float captureGaugeValue = 0.1f;//占領中の基本ゲージ速度
+    
+    private int captureRange = 25;//AIが停止するタワーの占領範囲
+    public int getCaptureRange() { return captureRange; }
+
+    //本拠点かどうか
+    [SerializeField]
+    private bool isMainTower = false;
+    public bool getIsMainTower() {  return isMainTower; }
 
     //防衛中のキャラクター情報
     public List<GameObject> defenseCharacterList = new List<GameObject>();
@@ -27,10 +40,9 @@ public class Tower : MonoBehaviour
     public Transform[] defensePatrolPosition;//巡回ポイント
 
     //塔の管理クラス
-    public TowerManager towerManager;
-
+    [SerializeField]
+    private TowerManager towerManager;
     public GameObject TowerRespownLocation;
-
     public bool IsTargetTowerRespown;//タワーからリスポーンできるか
 
     //タワーのゲージ状態取得
@@ -120,9 +132,10 @@ public class Tower : MonoBehaviour
             //占領中の人数が多いほど、ゲージの増加量は多い
             captureGauge += (captureGaugeValue * blueCharaList.Count); 
         }
+
         if(is_capture_red) {
             //上限に達している場合はそれ以上カウントは増えない
-            if (captureGauge > redCaptureLimit) { return; }
+            if (captureGauge < redCaptureLimit) { return; }
 
             captureGauge -= (captureGaugeValue * redCharaList.Count); 
         }
@@ -171,7 +184,6 @@ public class Tower : MonoBehaviour
     /// </summary>
     private void CangeTower()
     {
-
         List<GameObject> blueTowerList = towerManager.getBlueTowerList();
         List<GameObject> redTowerList = towerManager.getRedTowerList();
         List<GameObject> natureTowerList = towerManager.getNatureTowerList();

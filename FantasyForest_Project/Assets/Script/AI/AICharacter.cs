@@ -10,7 +10,7 @@ public class AICharacter : BaseCharacter
 {
     //ナビメッシュエージェント
     private NavMeshAgent agent;
-    public NavMeshAgent getNavmeshAgent() {  return agent; }
+    public NavMeshAgent getNavmeshAgent() { return agent; }
 
     //AIの状態管理
     [SerializeField]
@@ -30,8 +30,8 @@ public class AICharacter : BaseCharacter
     //キャラクターが防衛するタワーのオブジェクト
     [SerializeField]
     private GameObject DefenseTowerObject = null;
-    public GameObject getDefenseTowerObject() {  return DefenseTowerObject; }
-    public void setDefenseTowerObject(GameObject value) { DefenseTowerObject = value;}
+    public GameObject getDefenseTowerObject() { return DefenseTowerObject; }
+    public void setDefenseTowerObject(GameObject value) { DefenseTowerObject = value; }
 
     //攻撃範囲内に入ってきたキャラクターオブジェクト
     private GameObject AttackObject = null;
@@ -94,8 +94,8 @@ public class AICharacter : BaseCharacter
                 //防衛処理
                 Defense();
                 break;
-            default: 
-                break; 
+            default:
+                break;
         }
     }
 
@@ -126,7 +126,7 @@ public class AICharacter : BaseCharacter
         //移動速度設定
         agent.speed = getCharacterSpeed();
         agent.acceleration = getCharacterSpeed();
-        agent.velocity = new Vector3(50,0,50);
+        agent.velocity = new Vector3(50, 0, 50);
         agent.isStopped = false;
 
         //移動するべきタワーが見つかったので、AIのステートを移動に変更
@@ -160,17 +160,10 @@ public class AICharacter : BaseCharacter
         Vector3 TowerDiffPosition = CaptureTowerObject.transform.position - agent.transform.position;
         //タワーに近づいた場合（占領範囲内）は
         //移動を停止し、占領ステートへ変更
-        if (Vector3.Magnitude(TowerDiffPosition) < 30)
+
+        //タワーとの距離が一定以下なら
+        if (Vector3.Magnitude(TowerDiffPosition) < CaptureTowerObject.GetComponent<Tower>().getCaptureRange())
         {
-            //移動アニメーションを停止
-            base.StopAnimation(ANIMATION_STATE.RUN);
-
-            //タワー占領範囲内
-            agent.speed = 0;
-            agent.acceleration = 0;
-            agent.velocity = Vector3.zero;
-            agent.isStopped = true;
-
             if (CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
             {
                 //移動アニメーション
@@ -183,7 +176,7 @@ public class AICharacter : BaseCharacter
                 CaptureTowerObject = null;//占領の目標のタワーオブジェクトを破棄
 
                 var defenseTower = DefenseTowerObject.GetComponent<Tower>();
-                
+
                 //タワーの防衛を行っているキャラクターリストへ入れる
                 defenseTower.defenseCharacterList.Add(gameObject);
                 //防衛状態に移動する際に移動位置を決める
@@ -193,11 +186,18 @@ public class AICharacter : BaseCharacter
                 agent.speed = getCharacterSpeed() / 2;//移動時のスピードの半分
                 agent.acceleration = 50;
                 agent.isStopped = false;
-
-
             }
             else
             {
+                //移動アニメーションを停止
+                base.StopAnimation(ANIMATION_STATE.RUN);
+
+                //タワー占領範囲内
+                agent.speed = 0;
+                agent.acceleration = 0;
+                agent.velocity = Vector3.zero;
+                agent.isStopped = true;
+
                 //タワーが自軍のものでないならステータスを占領状態へ変更
                 ai_status = AI_STATUS.CAPTURE;
             }
@@ -212,7 +212,7 @@ public class AICharacter : BaseCharacter
         //占領状態
         //ターゲットとした塔の占領が自軍のものになったら
         //AIのステートをタワー探索へ変更
-        if(CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
+        if (CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
         {
             agent.speed = 0;
             agent.acceleration = 0;
@@ -276,8 +276,33 @@ public class AICharacter : BaseCharacter
 
 
         //タワーの周りを巡回するように防衛する
-        //巡回途中に敵キャラクターが攻撃範囲に入ったら、
-        //攻撃ステートへ変更する
+        //巡回途中に敵キャラクターがタワーの占領範囲内にいるならば
+        //占領中の敵に向かい、攻撃ステートへ変更する
+        switch (team_color)
+        {
+            case TEAM_COLOR.BLUE:
+                //青軍の場合は赤軍の情報
+                if (defenseTower.getRedCharaList().Count > 0 && AttackObject == null)
+                {
+                    float nearDis = 0.0f;
+                    foreach (GameObject redCharacterAgent in defenseTower.getRedCharaList())
+                    {
+                        float distance = Vector3.Distance(redCharacterAgent.transform.position, agent.transform.position);
+                        if (nearDis == 0 || nearDis > distance)
+                        {
+                            nearDis = distance;
+                            AttackObject = redCharacterAgent;
+                            isAttackMode = true;//攻撃状態へ
+                        }
+                    }
+                }
+                break;
+            case TEAM_COLOR.RED:
+                break;
+            default:
+                break;
+        }
+
 
         if (defenseTower.defensePatrolPosition.Length == 0)
         {
@@ -299,21 +324,11 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void BlueTowerSearch()
     {
-        //タワーのカウント数
-        int blueTowerCount = towerManager.getBlueTowerCount();
-        int redTowerCount = towerManager.getRedTowerCount();
-        int natureTowerCount = towerManager.getNatureTowerCount();
-
-        //タワーオブジェクトそのもののデータ
-        List<GameObject> blueTowerList = towerManager.getBlueTowerList();
-        List<GameObject> redTowerList = towerManager.getRedTowerList();
-        List<GameObject> natureTowerList = towerManager.getNatureTowerList();
-
-        if (natureTowerCount > 0)
+        if (towerManager.getNatureTowerList().Count > 0)
         {
             //中立タワーリストの中から距離が一番近いものを目指す
             float nearDis = 0.0f;
-            foreach (GameObject natureTower in natureTowerList)
+            foreach (GameObject natureTower in towerManager.getNatureTowerList())
             {
                 float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
                 if (nearDis == 0 || nearDis > distance)
@@ -322,11 +337,11 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = natureTower;
                 }
             }
-        } 
-        else if(blueTowerCount < redTowerCount)
+        }
+        else if (towerManager.getBlueTowerList().Count < towerManager.getRedTowerList().Count)
         {
             float nearDis = 0.0f;
-            foreach (GameObject redTower in redTowerList)
+            foreach (GameObject redTower in towerManager.getRedTowerList())
             {
                 float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
                 if (nearDis == 0 || nearDis < distance)
@@ -335,14 +350,14 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = redTower;
                 }
             }
-        } 
+        }
         else
         {
             //自軍タワーが多い場合は自軍占領タワーリストから
             //現在の位置に一番近いものをターゲットとする（タワーの防衛）
             //中立タワーリストの中から距離が一番近いものを目指す
             float nearDis = 0.0f;
-            foreach (GameObject blueTower in blueTowerList)
+            foreach (GameObject blueTower in towerManager.getBlueTowerList())
             {
                 float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
                 if (nearDis == 0 || nearDis > distance)
@@ -360,21 +375,11 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void RedTowerSearch()
     {
-        //タワーのカウント数
-        int blueTowerCount = towerManager.getBlueTowerCount();
-        int redTowerCount = towerManager.getRedTowerCount();
-        int natureTowerCount = towerManager.getNatureTowerCount();
-
-        //タワーオブジェクトそのもののデータ
-        List<GameObject> blueTowerList = towerManager.getBlueTowerList();
-        List<GameObject> redTowerList = towerManager.getRedTowerList();
-        List<GameObject> natureTowerList = towerManager.getNatureTowerList();
-
-        if (natureTowerCount > 0)
+        if (towerManager.getNatureTowerList().Count > 0)
         {
             //中立タワーリストの中から距離が一番近いものを目指す
             float nearDis = 0.0f;
-            foreach (GameObject natureTower in natureTowerList)
+            foreach (GameObject natureTower in towerManager.getNatureTowerList())
             {
                 float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
                 if (nearDis == 0 || nearDis > distance)
@@ -383,13 +388,13 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = natureTower;
                 }
             }
-        } 
-        else if(redTowerCount < blueTowerCount)
+        }
+        else if (towerManager.getRedTowerList().Count < towerManager.getBlueTowerList().Count)
         {
             //敵軍のタワーが自軍タワーより多いのであれば
             //敵軍として占領されているタワーのうちから自分との距離が一番遠いものを目指す（タワーへの攻撃占領）
             float nearDis = 0.0f;
-            foreach (GameObject redTower in redTowerList)
+            foreach (GameObject redTower in towerManager.getRedTowerList())
             {
                 float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
                 if (nearDis == 0 || nearDis < distance)
@@ -398,14 +403,14 @@ public class AICharacter : BaseCharacter
                     CaptureTowerObject = redTower;
                 }
             }
-        } 
+        }
         else
         {
             //自軍タワーが多い場合は自軍占領タワーリストから
             //現在の位置に一番近いものをターゲットとする（タワーの防衛）
             //中立タワーリストの中から距離が一番近いものを目指す
             float nearDis = 0.0f;
-            foreach (GameObject blueTower in blueTowerList)
+            foreach (GameObject blueTower in towerManager.getBlueTowerList())
             {
                 float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
                 if (nearDis == 0 || nearDis > distance)
