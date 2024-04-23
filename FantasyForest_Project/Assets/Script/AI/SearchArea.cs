@@ -31,7 +31,7 @@ public class SearchArea : MonoBehaviour
             //攻撃状態にセット
             parentObject.GetComponent<AICharacter>().setIsAttackMode(true);
             //占領に向かっていたタワーの情報を削除
-            parentObject.GetComponent<AICharacter>().setCaptureObject(null);
+            //parentObject.GetComponent<AICharacter>().setCaptureObject(null);
             //攻撃対象のゲームオブジェクト設定
             parentObject.GetComponent<AICharacter>().setAttackObject(other.gameObject);
         }
@@ -52,7 +52,7 @@ public class SearchArea : MonoBehaviour
             //攻撃対象のゲームオブジェクト初期化
             parentObject.GetComponent<AICharacter>().setAttackObject(null);
             //再度タワー探索処理へ
-            parentObject.GetComponent<AICharacter>().setAiStatus(AI_STATUS.SEARCH);
+            //parentObject.GetComponent<AICharacter>().setAiStatus(AI_STATUS.SEARCH);
         }
     }
 }

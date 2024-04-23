@@ -34,6 +34,7 @@ public class AICharacter : BaseCharacter
     public void setDefenseTowerObject(GameObject value) { DefenseTowerObject = value; }
 
     //攻撃範囲内に入ってきたキャラクターオブジェクト
+    [SerializeField]
     private GameObject AttackObject = null;
     public GameObject getAttackObject() { return AttackObject; }
     public void setAttackObject(GameObject value) { AttackObject = value; }
@@ -209,6 +210,9 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void Capture()
     {
+        //タワーを占領中に、タワーの占領範囲内に敵が入ってきたら
+        //その敵をターゲットとする
+
         //占領状態
         //ターゲットとした塔の占領が自軍のものになったら
         //AIのステートをタワー探索へ変更

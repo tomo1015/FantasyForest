@@ -72,6 +72,14 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
                 //キャラクターステータスの設定
                 targetCharacter.CharacterStatus();
 
+                //AIキャラクターがリスポーンしたら
+                var aiCharacter_comp = standRespownList[i].GetComponent<AICharacter>();
+                if(aiCharacter_comp != null)
+                {
+                    //ステータスを初期化
+                    aiCharacter_comp.setAiStatus(AI_STATUS.NONE);
+                }
+
                 targetCharacter.RespownTime = 0;//管理時間を0にリセット
 
                 //リスポーン対象リストから削除
