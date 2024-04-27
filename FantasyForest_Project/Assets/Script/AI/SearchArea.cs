@@ -37,22 +37,22 @@ public class SearchArea : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.tag != "Character")
-        {
-            return;
-        }
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (other.tag != "Character")
+    //    {
+    //        return;
+    //    }
 
-        //コライダーから出て行ったのが青チームなら
-        if (other.gameObject.GetComponent<BaseCharacter>().team_color != parentObject.GetComponent<BaseCharacter>().team_color)
-        {
-            //攻撃状態を解除
-            parentObject.GetComponent<AICharacter>().setIsAttackMode(false);
-            //攻撃対象のゲームオブジェクト初期化
-            parentObject.GetComponent<AICharacter>().setAttackObject(null);
-            //再度タワー探索処理へ
-            //parentObject.GetComponent<AICharacter>().setAiStatus(AI_STATUS.SEARCH);
-        }
-    }
+    //    //コライダーから出て行ったのが青チームなら
+    //    if (other.gameObject.GetComponent<BaseCharacter>().team_color != parentObject.GetComponent<BaseCharacter>().team_color)
+    //    {
+    //        //攻撃状態を解除
+    //        parentObject.GetComponent<AICharacter>().setIsAttackMode(false);
+    //        //攻撃対象のゲームオブジェクト初期化
+    //        parentObject.GetComponent<AICharacter>().setAttackObject(null);
+    //        //再度タワー探索処理へ
+    //        //parentObject.GetComponent<AICharacter>().setAiStatus(AI_STATUS.SEARCH);
+    //    }
+    //}
 }

@@ -78,6 +78,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
                 {
                     //ステータスを初期化
                     aiCharacter_comp.setAiStatus(AI_STATUS.NONE);
+                    aiCharacter_comp.setAttackObject(null);
                 }
 
                 targetCharacter.RespownTime = 0;//管理時間を0にリセット

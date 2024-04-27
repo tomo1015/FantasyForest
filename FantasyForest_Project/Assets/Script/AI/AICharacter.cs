@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Constants;
-using System;
-using Unity.VisualScripting;
 
 public class AICharacter : BaseCharacter
 {
@@ -17,6 +13,9 @@ public class AICharacter : BaseCharacter
     private AI_STATUS ai_status;
     public AI_STATUS getAiStatus() { return ai_status; }
     public void setAiStatus(AI_STATUS setStatus) { ai_status = setStatus; }
+    private AI_STATUS pre_ai_status;
+    public AI_STATUS getPreAiStatus() { return pre_ai_status; }
+    public void setPreAiStatus(AI_STATUS setStatus) { pre_ai_status = setStatus; }
 
     //塔の管理クラス
     public TowerManager towerManager;
@@ -56,6 +55,7 @@ public class AICharacter : BaseCharacter
         //このクラスだけの処理
         agent = GetComponent<NavMeshAgent>();//ナビメッシュエージェント取得
         ai_status = AI_STATUS.NONE;//AIの状態を一旦初期状態へ変更
+        pre_ai_status = AI_STATUS.NONE;
     }
 
     protected override void Update()
@@ -63,12 +63,10 @@ public class AICharacter : BaseCharacter
         //HP管理処理
         base.Update();
 
-        //AIステータス管理
-        bool is_active = getActive();
-
         //生存していないなら処理しない
-        if (!is_active) { return; }
+        if (!getActive()) { return; }
 
+        //AIステータス管理
         switch (ai_status)
         {
             case AI_STATUS.NONE:
@@ -210,8 +208,13 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void Capture()
     {
-        //タワーを占領中に、タワーの占領範囲内に敵が入ってきたら
+        //タワーを占領中に、攻撃範囲内に敵が入ってきたら
         //その敵をターゲットとする
+        if(AttackObject != null)
+        {
+            ai_status = AI_STATUS.ATTACK;
+            return;
+        }
 
         //占領状態
         //ターゲットとした塔の占領が自軍のものになったら
@@ -232,8 +235,9 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void Attack()
     {
+        var AttackTarget = AttackObject.GetComponent<BaseCharacter>();
         //攻撃対象の敵が倒れた場合は攻撃アニメーションを停止してタワー探索処理へ
-        if (AttackObject.GetComponent<BaseCharacter>().getActive() == false)
+        if (AttackTarget.getActive() == false)
         {
             //攻撃アニメーション停止
             base.StopAnimation(ANIMATION_STATE.ATTACK);
@@ -247,7 +251,7 @@ public class AICharacter : BaseCharacter
         else
         {
             //対象のキャラクターに近づいたら、攻撃アニメーションを再生させる
-            Vector3 AttackDiffPosition = AttackObject.transform.position - agent.transform.position;
+            Vector3 AttackDiffPosition = AttackTarget.transform.position - agent.transform.position;
             //TODO：攻撃範囲は装備している武器によって変わるものとする
             if (Vector3.Magnitude(AttackDiffPosition) < 10)
             {
@@ -263,7 +267,7 @@ public class AICharacter : BaseCharacter
 
                 //TODO：仮で攻撃
                 //相手側のHPを減らす
-                AttackObject.GetComponent<BaseCharacter>().WeponTakeDamege(WEPON.Sword);
+                AttackTarget.WeponTakeDamege(WEPON.Sword);
             }
         }
     }
