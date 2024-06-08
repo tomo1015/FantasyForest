@@ -55,17 +55,12 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
                 switch (targetCharacter.team_color)
                 {
                     case TEAM_COLOR.RED:
-                        //タワーの情報を取得
-                        int redTowerCount = towerManager.getRedTowerCount();
-                        List<GameObject> redTowerList = towerManager.getRedTowerList();
                         //赤チーム用のリスポーン位置確定
-                        targetCharacter.transform.position = RespownTowerPosition(redTowerCount, redTowerList, targetCharacter);
+                        targetCharacter.transform.position = RespownTowerPosition(towerManager.getRedTowerList().Count, towerManager.getRedTowerList(), targetCharacter);
                         break;
                     case TEAM_COLOR.BLUE:
                         //青チーム用のリスポーン位置確定
-                        int blueTowerCount = towerManager.getRedTowerCount();
-                        List<GameObject> blueTowerList = towerManager.getRedTowerList();
-                        targetCharacter.transform.position = RespownTowerPosition(blueTowerCount, blueTowerList, targetCharacter);
+                        targetCharacter.transform.position = RespownTowerPosition(towerManager.getBlueTowerList().Count, towerManager.getBlueTowerList(), targetCharacter);
                         break;
                     default:
                         break;
@@ -76,6 +71,15 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
 
                 //キャラクターステータスの設定
                 targetCharacter.CharacterStatus();
+
+                //AIキャラクターがリスポーンしたら
+                var aiCharacter_comp = standRespownList[i].GetComponent<AICharacter>();
+                if(aiCharacter_comp != null)
+                {
+                    //ステータスを初期化
+                    aiCharacter_comp.setAiStatus(AI_STATUS.NONE);
+                    aiCharacter_comp.setAttackObject(null);
+                }
 
                 targetCharacter.RespownTime = 0;//管理時間を0にリセット
 
