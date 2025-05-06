@@ -6,22 +6,130 @@ using Constants;
 using UnityEngine.UIElements.Experimental;
 using System;
 
+/// <summary>
+/// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒªã‚¹ãƒãƒ¼ãƒ³ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// </summary>
 public class RespownManager : SingletonMonoBehaviour<RespownManager>
 {
-
-    //ƒŠƒXƒ|[ƒ“‘ÎÛƒLƒƒƒ‰ƒNƒ^[
+    /// <summary>
+    /// ãƒªã‚¹ãƒãƒ¼ãƒ³å¾…æ©Ÿä¸­ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãƒªã‚¹ãƒˆ
+    /// </summary>
     public List<GameObject> standRespownList = new List<GameObject>();
 
-    //ƒŠƒXƒ|[ƒ“‚ÉŠ|‚©‚éŠÔ
-    private int RespownLimitTime = 100;
+    /// <summary>
+    /// ãƒªã‚¹ãƒãƒ¼ãƒ³ã¾ã§ã®å¾…æ©Ÿæ™‚é–“
+    /// </summary>
+    private const int RESPAWN_LIMIT_TIME = 100;
 
-    //“ƒ‚ÌŠÇ—ƒNƒ‰ƒX
+    /// <summary>
+    /// ã‚¿ãƒ¯ãƒ¼ç®¡ç†ã‚¯ãƒ©ã‚¹
+    /// </summary>
     public TowerManager towerManager;
 
     [SerializeField]
     private List<GameObject> respownPosition;
 
-    private Vector3 respown_position;
+    /// <summary>
+    /// ãƒªã‚¹ãƒãƒ¼ãƒ³å‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹
+    /// </summary>
+    private void exeRespown()
+    {
+        if (standRespownList.Count <= 0) { return; }
+
+        for (int i = 0; i < standRespownList.Count; i++)
+        {
+            var targetCharacter = standRespownList[i].GetComponent<BaseCharacter>();
+            if (targetCharacter.RespownTime >= RESPAWN_LIMIT_TIME)
+            {
+                RespawnCharacter(targetCharacter);
+                standRespownList.RemoveAt(i);
+            }
+            else
+            {
+                targetCharacter.RespownTime++;
+            }
+        }
+    }
+
+    /// <summary>
+    /// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚’ãƒªã‚¹ãƒãƒ¼ãƒ³ã•ã›ã‚‹
+    /// </summary>
+    private void RespawnCharacter(BaseCharacter targetCharacter)
+    {
+        Vector3 respawnPos = GetRespawnPosition(targetCharacter);
+        targetCharacter.transform.position = respawnPos;
+
+        targetCharacter.gameObject.SetActive(true);
+        targetCharacter.CharacterStatus();
+        targetCharacter.RespownTime = 0;
+    }
+
+    /// <summary>
+    /// ãƒãƒ¼ãƒ ã«å¿œã˜ãŸãƒªã‚¹ãƒãƒ¼ãƒ³ä½ç½®ã‚’å–å¾—ã™ã‚‹
+    /// </summary>
+    private Vector3 GetRespawnPosition(BaseCharacter targetCharacter)
+    {
+        switch (targetCharacter.team_color)
+        {
+            case TEAM_COLOR.RED:
+                return GetTeamRespawnPosition(towerManager.getRedTowerCount(), 
+                                           towerManager.getRedTowerList(), 
+                                           targetCharacter);
+            case TEAM_COLOR.BLUE:
+                return GetTeamRespawnPosition(towerManager.getBlueTowerCount(), 
+                                           towerManager.getBlueTowerList(), 
+                                           targetCharacter);
+            default:
+                return GetDefaultRespawnPosition();
+        }
+    }
+
+    /// <summary>
+    /// ãƒãƒ¼ãƒ ã®ã‚¿ãƒ¯ãƒ¼ã«åŸºã¥ã„ã¦ãƒªã‚¹ãƒãƒ¼ãƒ³ä½ç½®ã‚’æ±ºå®šã™ã‚‹
+    /// </summary>
+    private Vector3 GetTeamRespawnPosition(int towerCount, List<GameObject> towerList, BaseCharacter targetCharacter)
+    {
+        if (towerCount <= 0)
+        {
+            return GetDefaultRespawnPosition();
+        }
+
+        return FindNearestTowerRespawnPosition(towerList, targetCharacter);
+    }
+
+    /// <summary>
+    /// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒªã‚¹ãƒãƒ¼ãƒ³ä½ç½®ã‚’å–å¾—ã™ã‚‹
+    /// </summary>
+    private Vector3 GetDefaultRespawnPosition()
+    {
+        UnityEngine.Random.InitState(DateTime.Now.Millisecond);
+        int randomIndex = UnityEngine.Random.Range(1, 4);
+        return respownPosition[randomIndex].transform.position;
+    }
+
+    /// <summary>
+    /// æœ€ã‚‚è¿‘ã„ã‚¿ãƒ¯ãƒ¼ã®ãƒªã‚¹ãƒãƒ¼ãƒ³ä½ç½®ã‚’æ¢ã™
+    /// </summary>
+    private Vector3 FindNearestTowerRespawnPosition(List<GameObject> towerList, BaseCharacter targetCharacter)
+    {
+        float nearestDistance = float.MaxValue;
+        Vector3 respawnPosition = Vector3.zero;
+
+        foreach (GameObject tower in towerList)
+        {
+            var towerComponent = tower.GetComponent<Tower>();
+            if (!towerComponent.IsTargetTowerRespown) { continue; }
+
+            float distance = Vector3.Distance(tower.transform.position, targetCharacter.transform.position);
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                respawnPosition = towerComponent.TowerRespownLocation.transform.position;
+            }
+        }
+
+        return respawnPosition;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -33,98 +141,5 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     void Update()
     {
         exeRespown();
-    }
-
-    /// <summary>
-    /// ƒŠƒXƒ|[ƒ“À{ˆ—
-    /// </summary>
-    private void exeRespown()
-    {
-        //ƒŠƒXƒ|[ƒ“‘ÎÛ‚ª‚¢‚È‚¢‚È‚çˆ—‚ğs‚í‚È‚¢‚æ‚¤‚É‚·‚é
-        if (standRespownList.Count <= 0) { return; }
-
-        //ƒŠƒXƒ|[ƒ“‘ÎÛƒNƒ‰ƒX‚É“o˜^‚³‚ê‚½ƒLƒƒƒ‰ƒNƒ^[î•ñ‚Ìæ“¾
-        //ƒQ[ƒ€ƒV[ƒ““à‚É‚ ‚éƒ^ƒ[ƒIƒuƒWƒFƒNƒg‚©‚ç
-        //‰Šúó‘Ô‚Ìƒ`[ƒ€ƒJƒ‰[‚É‚æ‚Á‚Äó‘Ô‚ğU‚è•ª‚¯‚é
-        for (int i = 0; i < standRespownList.Count; i++)
-        {
-            var targetCharacter = standRespownList[i].GetComponent<BaseCharacter>();
-            if (targetCharacter.RespownTime >= RespownLimitTime)
-            {//‘ÎÛ‚ÌƒLƒƒƒ‰ƒNƒ^[‚ªƒŠƒXƒ|[ƒ“ŠÔ‚ğ–‚½‚µ‚½‚ç
-
-                switch (targetCharacter.team_color)
-                {
-                    case TEAM_COLOR.RED:
-                        //ƒ^ƒ[‚Ìî•ñ‚ğæ“¾
-                        int redTowerCount = towerManager.getRedTowerCount();
-                        List<GameObject> redTowerList = towerManager.getRedTowerList();
-                        //Ôƒ`[ƒ€—p‚ÌƒŠƒXƒ|[ƒ“ˆÊ’uŠm’è
-                        targetCharacter.transform.position = RespownTowerPosition(redTowerCount, redTowerList, targetCharacter);
-                        break;
-                    case TEAM_COLOR.BLUE:
-                        //Âƒ`[ƒ€—p‚ÌƒŠƒXƒ|[ƒ“ˆÊ’uŠm’è
-                        int blueTowerCount = towerManager.getRedTowerCount();
-                        List<GameObject> blueTowerList = towerManager.getRedTowerList();
-                        targetCharacter.transform.position = RespownTowerPosition(blueTowerCount, blueTowerList, targetCharacter);
-                        break;
-                    default:
-                        break;
-                }
-
-                //ƒAƒNƒeƒBƒuó‘Ô‚É‚·‚é
-                targetCharacter.gameObject.SetActive(true);//ƒIƒuƒWƒFƒNƒg‚ÌÄ•\¦
-
-                //ƒLƒƒƒ‰ƒNƒ^[ƒXƒe[ƒ^ƒX‚Ìİ’è
-                targetCharacter.CharacterStatus();
-
-                targetCharacter.RespownTime = 0;//ŠÇ—ŠÔ‚ğ0‚ÉƒŠƒZƒbƒg
-
-                //ƒŠƒXƒ|[ƒ“‘ÎÛƒŠƒXƒg‚©‚çíœ
-                standRespownList.Remove(standRespownList[i]);
-            } 
-            else
-            {
-                //ƒŠƒXƒ|[ƒ“‚Å‚«‚È‚¢ê‡‚ÍƒJƒEƒ“ƒ^[‚ğ‘‚â‚·
-                targetCharacter.RespownTime++;
-            }
-        }
-    }
-
-    /// <summary>
-    /// ƒ^ƒ[‚Å‚ÌƒŠƒXƒ|[ƒ“ˆÊ’u‚ğŒˆ’è‚·‚é
-    /// </summary>
-    /// <param name="towerCount"></param>
-    /// <param name="towerList"></param>
-    /// <param name="targetCharacter"></param>
-    /// <returns></returns>
-    private Vector3 RespownTowerPosition(int towerCount = 0, List<GameObject> towerList = null, BaseCharacter targetCharacter = null)
-    {
-        Vector3 respown_position = new Vector3(0, 0, 0);
-        if (towerCount <= 0)
-        {
-            //è—Ì‚µ‚Ä‚¢‚éƒ^ƒ[‚ª0‚È‚çƒ^ƒ[‚Å‚ÌƒŠƒXƒ|[ƒ“‚Í‚Å‚«‚È‚¢‚Æ”»’f
-            //TODOF‚±‚Ì’iŠK‚Å‚ÌƒŠƒXƒ|[ƒ“ˆÊ’u‚Í–¢’è
-            UnityEngine.Random.InitState(DateTime.Now.Millisecond);//ƒ‰ƒ“ƒ_ƒ€‚Æ‚·‚éƒV[ƒh’l‚ğ’²®
-            var key = UnityEngine.Random.Range(1, 4);
-            return respownPosition[key].transform.position;
-        }
-
-        //“|‚ê‚½ˆÊ’u‚©‚çˆê”Ô‰“‚¢‚Æ‚±‚ë‚Ìƒ^ƒ[‚©‚çƒŠƒXƒ|[ƒ“‚·‚é‚æ‚¤‚É‚·‚é
-        //‚½‚¾‚µ’†S‚ÌƒIƒuƒWƒFƒNƒg‚Ìƒ^ƒ[‚Í‘ÎÛŠO‚É‚·‚é
-        float nearDis = 0.0f;
-        foreach (GameObject tower in towerList)
-        {
-            if (!tower.GetComponent<Tower>().IsTargetTowerRespown) { continue; }
-
-            //ˆê”Ô‰“‚¢‚à‚Ì‚ğŒ©‚Â‚¯‚é
-            float distance = Vector3.Distance(tower.transform.position, targetCharacter.transform.position);
-            if (nearDis == 0 || nearDis > distance)
-            {
-                nearDis = distance;
-                respown_position = tower.GetComponent<Tower>().TowerRespownLocation.transform.position;
-            }
-        }
-
-        return respown_position;
     }
 }

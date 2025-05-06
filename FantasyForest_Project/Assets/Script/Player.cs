@@ -2,70 +2,102 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// プレイヤーキャラクターの制御を行うクラス
+/// </summary>
 public class Player : BaseCharacter
 {
-    private Vector3 moveDirection;//移動方向
-    private Vector3 moveVelocity;//移動量
-    private Vector3 latestPosition;//直前のフレームにおける位置
+    /// <summary>
+    /// 回転の補間係数
+    /// </summary>
+    private const float ROTATION_SMOOTHING = 0.2f;
+
+    /// <summary>
+    /// 最小移動判定距離
+    /// </summary>
+    private const float MIN_MOVE_DISTANCE = 0.001f;
+
+    /// <summary>
+    /// 移動方向
+    /// </summary>
+    private Vector3 moveDirection;
+
+    /// <summary>
+    /// 移動量
+    /// </summary>
+    private Vector3 moveVelocity;
+
+    /// <summary>
+    /// 直前のフレームにおける位置
+    /// </summary>
+    private Vector3 latestPosition;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         //ベースクラス処理
         base.Start();
-
-        //プレイヤー初期設定
+        latestPosition = transform.position;
     }
 
     // Update is called once per frame
     protected override void Update()
     {
         base.Update();
-
-        //移動処理
-        Move();
+        HandleMovement();
     }
 
     private void FixedUpdate()
     {
-        //移動処理で求めた結果をもとにキャラクターを移動させる
-        Rigidbody.velocity = new Vector3(moveVelocity.x, Rigidbody.velocity.y, moveVelocity.z);
-
-        //移動する方向に対してキャラクターを回転させる
-        MoveRotation();
+        ApplyMovement();
+        UpdateRotation();
     }
 
     /// <summary>
-    /// 移動処理
+    /// 移動入力の処理と移動量の計算を行う
     /// </summary>
-    private void Move()
+    private void HandleMovement()
     {
-        //キー入力
-        float moveX = Input.GetAxisRaw("Vertical"); 
+        float moveX = Input.GetAxisRaw("Vertical");
         float moveZ = Input.GetAxisRaw("Horizontal");
 
-        moveDirection = new Vector3(moveX, 0, moveZ);
-        moveDirection.Normalize();//正規化（斜めの距離が長くなるのを防ぐ）
-
+        moveDirection = new Vector3(moveX, 0, moveZ).normalized;
         moveVelocity = moveDirection * getCharacterSpeed();
     }
 
     /// <summary>
-    /// 移動する方向にキャラクターを回転させる
+    /// 計算された移動量を物理演算に適用する
     /// </summary>
-    private void MoveRotation()
+    private void ApplyMovement()
     {
-        Vector3 diffDistance = new Vector3(transform.position.x,0,transform.position.z) - new Vector3(latestPosition.x,0, latestPosition.z);
+        Rigidbody.linearVelocity = new Vector3(moveVelocity.x, Rigidbody.linearVelocity.y, moveVelocity.z);
+    }
+
+    /// <summary>
+    /// 移動方向に応じてキャラクターの回転を更新する
+    /// </summary>
+    private void UpdateRotation()
+    {
+        Vector3 currentPosition = new Vector3(transform.position.x, 0, transform.position.z);
+        Vector3 previousPosition = new Vector3(latestPosition.x, 0, latestPosition.z);
+        Vector3 diffDistance = currentPosition - previousPosition;
         latestPosition = transform.position;
 
-        if (Mathf.Abs(diffDistance.x) > 0.001f || Mathf.Abs(diffDistance.z) > 0.001f)
+        if (ShouldUpdateRotation(diffDistance))
         {
-            if(moveDirection == Vector3.zero) { return; }
-
-            Quaternion rotation = Quaternion.LookRotation(diffDistance);
-            rotation = Quaternion.Slerp(Rigidbody.transform.rotation, rotation, 0.2f);
-            
-            transform.rotation = rotation;
+            Quaternion targetRotation = Quaternion.LookRotation(diffDistance);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, ROTATION_SMOOTHING);
         }
     }
+
+    /// <summary>
+    /// 回転を更新すべきかどうかを判定する
+    /// </summary>
+    private bool ShouldUpdateRotation(Vector3 diffDistance)
+    {
+        return (Mathf.Abs(diffDistance.x) > MIN_MOVE_DISTANCE || 
+                Mathf.Abs(diffDistance.z) > MIN_MOVE_DISTANCE) && 
+               moveDirection != Vector3.zero;
+    }
 }
+

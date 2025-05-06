@@ -3,56 +3,109 @@ using System.Collections.Generic;
 using UnityEngine;
 using Constants;
 
+/// <summary>
+/// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç´¢æ•µç¯„å›²ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// </summary>
 public class SearchArea : MonoBehaviour
 {
+    /// <summary>
+    /// è¦ªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼ˆAIã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ï¼‰
+    /// </summary>
     private GameObject parentObject;
-    // Start is called before the first frame update
+
+    /// <summary>
+    /// AIã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥
+    /// </summary>
+    private AICharacter aiCharacter;
+
+    /// <summary>
+    /// è¦ªã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒ™ãƒ¼ã‚¹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥
+    /// </summary>
+    private BaseCharacter parentCharacter;
+
+    /// <summary>
+    /// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ã‚¿ã‚°å
+    /// </summary>
+    private const string CHARACTER_TAG = "Character";
+
     void Start()
     {
-        //eƒIƒuƒWƒFƒNƒg‚ğæ“¾
         parentObject = transform.parent.gameObject;
+        aiCharacter = parentObject.GetComponent<AICharacter>();
+        parentCharacter = parentObject.GetComponent<BaseCharacter>();
+
+        if (aiCharacter == null || parentCharacter == null)
+        {
+            Debug.LogError("å¿…è¦ãªã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: " + gameObject.name);
+        }
     }
 
     /// <summary>
-    /// ƒRƒ‰ƒCƒ_[”»’èˆ—
+    /// ç´¢æ•µç¯„å›²å†…ã«æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãŒå…¥ã£ãŸæ™‚ã®å‡¦ç†
     /// </summary>
-    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag != "Character")
-        {
-            return;
-        }
+        if (!IsValidCharacter(other)) return;
 
-
-        //ƒRƒ‰ƒCƒ_[‚É“ü‚Á‚Ä‚«‚½‚Ì‚ª“Gƒ`[ƒ€‚È‚ç
-        if (other.gameObject.GetComponent<BaseCharacter>().team_color != parentObject.GetComponent<BaseCharacter>().team_color)
+        var otherCharacter = other.gameObject.GetComponent<BaseCharacter>();
+        if (IsEnemyCharacter(otherCharacter))
         {
-            //UŒ‚ó‘Ô‚ÉƒZƒbƒg
-            parentObject.GetComponent<AICharacter>().setIsAttackMode(true);
-            //è—Ì‚ÉŒü‚©‚Á‚Ä‚¢‚½ƒ^ƒ[‚Ìî•ñ‚ğíœ
-            parentObject.GetComponent<AICharacter>().setCaptureObject(null);
-            //UŒ‚‘ÎÛ‚ÌƒQ[ƒ€ƒIƒuƒWƒFƒNƒgİ’è
-            parentObject.GetComponent<AICharacter>().setAttackObject(other.gameObject);
+            HandleEnemyEnter(other.gameObject);
         }
     }
 
+    /// <summary>
+    /// ç´¢æ•µç¯„å›²ã‹ã‚‰æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãŒå‡ºãŸæ™‚ã®å‡¦ç†
+    /// </summary>
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag != "Character")
-        {
-            return;
-        }
+        if (!IsValidCharacter(other)) return;
 
-        //ƒRƒ‰ƒCƒ_[‚©‚ço‚Äs‚Á‚½‚Ì‚ªÂƒ`[ƒ€‚È‚ç
-        if (other.gameObject.GetComponent<BaseCharacter>().team_color != parentObject.GetComponent<BaseCharacter>().team_color)
+        var otherCharacter = other.gameObject.GetComponent<BaseCharacter>();
+        if (IsEnemyCharacter(otherCharacter))
         {
-            //UŒ‚ó‘Ô‚ğ‰ğœ
-            parentObject.GetComponent<AICharacter>().setIsAttackMode(false);
-            //UŒ‚‘ÎÛ‚ÌƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‰Šú‰»
-            parentObject.GetComponent<AICharacter>().setAttackObject(null);
-            //Ä“xƒ^ƒ[’Tõˆ—‚Ö
-            parentObject.GetComponent<AICharacter>().setAiStatus(AI_STATUS.SEARCH);
+            HandleEnemyExit();
         }
+    }
+
+    /// <summary>
+    /// å¯¾è±¡ãŒæœ‰åŠ¹ãªã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‹ã©ã†ã‹ã‚’åˆ¤å®š
+    /// </summary>
+    private bool IsValidCharacter(Collider other)
+    {
+        return other != null && other.CompareTag(CHARACTER_TAG);
+    }
+
+    /// <summary>
+    /// å¯¾è±¡ãŒæ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã‹ã©ã†ã‹ã‚’åˆ¤å®š
+    /// </summary>
+    private bool IsEnemyCharacter(BaseCharacter otherCharacter)
+    {
+        return otherCharacter != null && 
+               otherCharacter.team_color != parentCharacter.team_color;
+    }
+
+    /// <summary>
+    /// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãŒç´¢æ•µç¯„å›²ã«å…¥ã£ãŸæ™‚ã®å‡¦ç†
+    /// </summary>
+    private void HandleEnemyEnter(GameObject enemyObject)
+    {
+        if (aiCharacter == null) return;
+
+        aiCharacter.IsAttackMode = true;
+        aiCharacter.CaptureTower = null;
+        aiCharacter.AttackTarget = enemyObject;
+    }
+
+    /// <summary>
+    /// æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãŒç´¢æ•µç¯„å›²ã‹ã‚‰å‡ºãŸæ™‚ã®å‡¦ç†
+    /// </summary>
+    private void HandleEnemyExit()
+    {
+        if (aiCharacter == null) return;
+
+        aiCharacter.IsAttackMode = false;
+        aiCharacter.CaptureTower = null;
+        aiCharacter.AiStatus = AI_STATUS.SEARCH;
     }
 }
