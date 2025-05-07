@@ -14,40 +14,30 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
     [SerializeField]
     List<GameObject> natureTowerList = new List<GameObject>();
 
-    [SerializeField]
-    private int redTower = 0;
-    [SerializeField]
-    private int blueTower = 0;
-    [SerializeField]
-    private int natureTower = 0;
-
-    public int getRedTowerCount() { return redTower; }
-    public int getBlueTowerCount() { return blueTower; }
-    public int getNatureTowerCount() { return natureTower; }
-
     public List<GameObject> getBlueTowerList() { return blueTowerList; }
     public List<GameObject> getRedTowerList() { return redTowerList; }
     public List<GameObject> getNatureTowerList() { return natureTowerList; }
 
+    public int getBlueTowerCount() { return blueTowerList.Count; }
+    public int getRedTowerCount() { return redTowerList.Count; }
+    public int getNatureTowerCount() { return natureTowerList.Count; }
+
     private void Start()
     {
-        //ƒQ[ƒ€ƒV[ƒ““à‚É‚ ‚éƒ^ƒ[ƒIƒuƒWƒFƒNƒg‚©‚ç
-        //‰Šúó‘Ô‚Ìƒ`[ƒ€ƒJƒ‰[‚É‚æ‚Á‚Äó‘Ô‚ğU‚è•ª‚¯‚é
+        // ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³å†…ã®ã‚¿ãƒ¯ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’
+        // å„ãƒãƒ¼ãƒ ã‚«ãƒ©ãƒ¼ã«å¿œã˜ã¦æŒ¯ã‚Šåˆ†ã‘
         for(int i = 0; i < towerList.Count; i++){
             switch (towerList[i].GetComponent<Tower>().tower_color)
             {
                 case Constants.TEAM_COLOR.RED:
-                    redTower++;
                     redTowerList.Add(towerList[i]);
                     break;
 
                 case Constants.TEAM_COLOR.BLUE:
-                    blueTower++;
                     blueTowerList.Add(towerList[i]);
                     break;
 
                 case Constants.TEAM_COLOR.NATURAL:
-                    natureTower++;
                     natureTowerList.Add(towerList[i]);
                     break;
             }
@@ -56,6 +46,6 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
 
     private void Update()
     {
-        //ƒ^ƒ[‚Ìè—Ìó‘Ô‚ğXV
+        // ã‚¿ãƒ¯ãƒ¼ã®çŠ¶æ…‹ã‚’æ›´æ–°
     }
 }

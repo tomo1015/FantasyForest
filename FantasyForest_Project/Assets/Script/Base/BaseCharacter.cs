@@ -5,6 +5,14 @@ using Constants;
 
 public abstract class BaseCharacter : MonoBehaviour
 {
+    public enum WEAPON
+    {
+        NONE = 0,
+        Sword, // 剣
+        Bow,   // 弓（遠距離攻撃）
+        Arrow, // 矢
+    }
+
     //チーム状態
     public TEAM_COLOR team_color;//チームカラー
     public Vector3 start_position;
@@ -12,11 +20,10 @@ public abstract class BaseCharacter : MonoBehaviour
     //キャラクターの情報
     public CHARACTER_TYPE characterType;
 
-    //リスポーン管理クラス
-    [SerializeField]
-    private RespownManager respownManager;
     //リスポーン内部時間
     public int RespownTime = 0;
+
+    private RespawnManager respawnManager;
 
     //キャラクター基本部分
     protected Rigidbody Rigidbody = null;
@@ -24,8 +31,8 @@ public abstract class BaseCharacter : MonoBehaviour
     //アニメーション
     private Animator Animator;
     //アニメーションで設定したフラグの名前
-    private const string key_isRun = "isRun";
-    private const string key_isAttack = "isAttack";
+    private const string KEY_IS_RUN = "isRun";
+    private const string KEY_IS_ATTACK = "isAttack";
     private const string key_isDown = "isDown";
 
     //HP状態
@@ -34,18 +41,20 @@ public abstract class BaseCharacter : MonoBehaviour
 
     //速度
     private float speed;
-    public float getCharacterSpeed() { return speed; }
-    public void setCharacterSpeed(float value) {  speed = value; }
+    public float GetCharacterSpeed() { return speed; }
+    public void SetCharacterSpeed(float value) {  speed = value; }
 
     //見えない武器のゲームオブジェクト
-    private GameObject EquipWeponGameObject;
+    private GameObject EquipWeapon;
 
     //装備する武器
     [SerializeField]
-    private WEPON weponName;
+    private WEAPON WeaponName;
 
     //生存状態かどうか
     private bool isActive;
+
+    public bool IsActive { get; private set; }
 
     public bool getActive()
     {
@@ -68,6 +77,9 @@ public abstract class BaseCharacter : MonoBehaviour
         //装備させるためのオブジェクトを探索
         //TODO：指定したキャラクターに対応した武器を装備させる
 
+        // TowerManagerの取得
+        respawnManager = RespawnManager.Instance;
+
         //HPの設定
         CharacterStatus();
 
@@ -83,7 +95,7 @@ public abstract class BaseCharacter : MonoBehaviour
             //HPが0になったら各種判定に使っているアクティブ情報をFalse
             isActive = false;
             //リスポーン管理クラスへ登録
-            respownManager.standRespownList.Add(gameObject);
+            respawnManager.standRespawnList.Add(gameObject);
             //対象となったキャラオブジェクトをシーンから破棄
             //Destroy(gameObject);
             gameObject.SetActive(false);
@@ -102,7 +114,7 @@ public abstract class BaseCharacter : MonoBehaviour
                 break;
             case ANIMATION_STATE.RUN:
                 //移動状態
-                Animator.SetBool(key_isRun, true);
+                Animator.SetBool(KEY_IS_RUN, true);
                 break;
             case ANIMATION_STATE.ATTACK:
                 //攻撃状態
@@ -129,7 +141,7 @@ public abstract class BaseCharacter : MonoBehaviour
                 break;
             case ANIMATION_STATE.RUN:
                 //移動状態を停止
-                Animator.SetBool(key_isRun, false);
+                Animator.SetBool(KEY_IS_RUN, false);
                 break;
             case ANIMATION_STATE.ATTACK:
                 //攻撃状態を停止
@@ -147,21 +159,21 @@ public abstract class BaseCharacter : MonoBehaviour
     /// <summary>
     /// どの武器によってダメージを受けたか
     /// </summary>
-    /// <param name="takeWepon"></param>
-    public void WeponTakeDamege(WEPON takeWepon)
+    /// <param name="takeWeapon"></param>
+    public void WeaponTakeDamage(WEAPON takeWeapon)
     {
         //受けた武器によってダメージを変化させる
-        switch (takeWepon)
+        switch (takeWeapon)
         {
-            case WEPON.NONE:
+            case WEAPON.NONE:
                 break;
-            case WEPON.Sword:
-                current_hp -= 2;
+            case WEAPON.Sword:
+                current_hp -= 50;
                 break;
-            case WEPON.Bow:
+            case WEAPON.Bow:
                 current_hp -= 1;
                 break;
-            case WEPON.Arrow:
+            case WEAPON.Arrow:
                 current_hp -= 5;
                 break;
         }
@@ -177,15 +189,18 @@ public abstract class BaseCharacter : MonoBehaviour
         {
             case CHARACTER_TYPE.CAT:
                 max_hp = 100;//最大HP
-                speed = 100;
+                speed = 30;
+                WeaponName = WEAPON.Sword;
                 break;
             case CHARACTER_TYPE.ELF:
                 max_hp = 150;
-                speed = 50;
+                speed = 25;
+                WeaponName = WEAPON.Bow;
                 break;
             case CHARACTER_TYPE.GOLEM:
                 max_hp = 300;
-                speed = 30;
+                speed = 10;
+                WeaponName = WEAPON.NONE;
                 break;
             default:
                 break;

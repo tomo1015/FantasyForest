@@ -5,9 +5,9 @@ using System;
 
 
 /// <summary>
-/// ƒVƒ“ƒOƒ‹ƒgƒ“—pŠî’êƒNƒ‰ƒX
+/// ï¿½Vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½gï¿½ï¿½ï¿½pï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X
 /// </summary>
-/// <typeparam name="T">”h¶ƒNƒ‰ƒX–¼</typeparam>
+/// <typeparam name="T">ï¿½hï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½</typeparam>
 public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T instance;
@@ -27,8 +27,8 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBe
 
     virtual protected void Awake()
     {
-        // ‘¼‚ÌƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚ÉƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚é‚©’²‚×‚é
-        // ƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚éê‡‚Í”jŠü‚·‚éB
+        // ï¿½ï¿½ï¿½ÌƒQï¿½[ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ÉƒAï¿½^ï¿½bï¿½`ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½ï¿½ï¿½×‚ï¿½
+        // ï¿½Aï¿½^ï¿½bï¿½`ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ê‡ï¿½Í”jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
         CheckInstance();
     }
 
@@ -43,7 +43,7 @@ public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBe
         {
             return true;
         }
-        Destroy(gameObject);    // ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚²‚Æ”jŠü(d—l‚É‚æ‚Á‚Ä‚Í•ÏX)
+        Destroy(gameObject);    // ï¿½Qï¿½[ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½Æ”jï¿½ï¿½(ï¿½dï¿½lï¿½É‚ï¿½ï¿½ï¿½Ä‚Í•ÏX)
         return false;
     }
 }

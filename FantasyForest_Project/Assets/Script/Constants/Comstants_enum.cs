@@ -1,7 +1,7 @@
 namespace Constants
 {
     /// <summary>
-    /// ƒ`[ƒ€ƒJƒ‰[
+    /// ãƒãƒ¼ãƒ ã‚«ãƒ©ãƒ¼
     /// </summary>
     public enum TEAM_COLOR
     {
@@ -11,20 +11,20 @@ namespace Constants
     }
 
     /// <summary>
-    /// AI‚ÌƒXƒe[ƒg
+    /// AIã®ã‚¹ãƒ†ãƒ¼ãƒˆ
     /// </summary>
     public enum AI_STATUS
     {
-        NONE,//‰½‚à‚µ‚Ä‚¢‚È‚¢
-        SEARCH,//’Tõ
-        CAPTURE,//è—Ì
-        MOVE,//ˆÚ“®
-        ATTACK,//UŒ‚
-        DEFENSE,//–h‰q
+        NONE,   // ä½•ã‚‚ã—ã¦ã„ãªã„
+        SEARCH, // æŽ¢ç´¢
+        CAPTURE,// å é ˜
+        MOVE,   // ç§»å‹•
+        ATTACK, // æ”»æ’ƒ
+        DEFENSE,// é˜²è¡›
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒXƒe[ƒg
+    /// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¹ãƒ†ãƒ¼ãƒˆ
     /// </summary>
     public enum ANIMATION_STATE
     {
@@ -34,16 +34,8 @@ namespace Constants
         DOWN
     }
 
-    public enum WEPON
-    {
-        NONE = 0,
-        Sword, //Œ•
-        Bow,   //‹|i’¼‰£‚è‚ ‚èj
-        Arrow, //–î
-    }
-
     /// <summary>
-    /// ƒLƒƒƒ‰ƒNƒ^[‚Ìƒ^ƒCƒv
+    /// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ã‚¿ã‚¤ãƒ—
     /// </summary>
     public enum CHARACTER_TYPE
     {
