@@ -839,14 +839,14 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 0.3
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -874,7 +874,7 @@ Light:
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
-  m_RenderMode: 0
+  m_RenderMode: 2
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -903,7 +903,7 @@ Transform:
   m_GameObject: {fileID: 208355444}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2019,6 +2019,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1085607272}
+    - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1085607275}
   m_SourcePrefab: {fileID: 100100000, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
 --- !u!1 &1085607267 stripped
 GameObject:
@@ -2091,16 +2094,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 169c281529ed9094090fb44a13f60e66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team_color: 0
+  team_color: 1
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 0
-  respownManager: {fileID: 0}
+  characterType: 1
   RespownTime: 0
-  weponName: 0
+  WeaponName: 0
   ai_status: 0
-  towerManager: {fileID: 0}
   CaptureTowerObject: {fileID: 0}
   DefenseTowerObject: {fileID: 0}
+  AttackObject: {fileID: 0}
+--- !u!114 &1085607275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085607267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e658bfc1e524494b9e54a1c92d8c1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animations: []
+  delayWeight: 0
+  isKeepFace: 0
+  isGUI: 1
 --- !u!1 &1131578089
 GameObject:
   m_ObjectHideFlags: 0
@@ -2600,6 +2618,10 @@ PrefabInstance:
       value: BlueAI_3
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_TagString
       value: Character
       objectReference: {fileID: 0}
@@ -2724,6 +2746,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1289615463}
+    - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1289615466}
   m_SourcePrefab: {fileID: 100100000, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
 --- !u!1 &1289615458 stripped
 GameObject:
@@ -2798,14 +2823,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 0
-  respownManager: {fileID: 0}
+  characterType: 1
   RespownTime: 0
-  weponName: 0
+  WeaponName: 0
   ai_status: 0
-  towerManager: {fileID: 0}
   CaptureTowerObject: {fileID: 0}
   DefenseTowerObject: {fileID: 0}
+  AttackObject: {fileID: 0}
+--- !u!114 &1289615466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289615458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e658bfc1e524494b9e54a1c92d8c1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animations: []
+  delayWeight: 0
+  isKeepFace: 0
+  isGUI: 1
 --- !u!1 &1290774596
 GameObject:
   m_ObjectHideFlags: 0
@@ -2978,6 +3018,10 @@ PrefabInstance:
       value: BlueAI_1
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_TagString
       value: Character
       objectReference: {fileID: 0}
@@ -3101,6 +3145,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1457179433}
+    - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1457179436}
   m_SourcePrefab: {fileID: 100100000, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
 --- !u!1 &1457179419 stripped
 GameObject:
@@ -3175,14 +3222,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 0
-  respownManager: {fileID: 0}
+  characterType: 1
   RespownTime: 0
-  weponName: 0
+  WeaponName: 0
   ai_status: 0
-  towerManager: {fileID: 0}
   CaptureTowerObject: {fileID: 0}
   DefenseTowerObject: {fileID: 0}
+  AttackObject: {fileID: 0}
+--- !u!114 &1457179436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457179419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e658bfc1e524494b9e54a1c92d8c1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animations: []
+  delayWeight: 0
+  isKeepFace: 0
+  isGUI: 1
 --- !u!1 &1480561212
 GameObject:
   m_ObjectHideFlags: 0
@@ -3417,6 +3479,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1613884011}
+    - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1613884014}
   m_SourcePrefab: {fileID: 100100000, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
 --- !u!1 &1613884006 stripped
 GameObject:
@@ -3489,16 +3554,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 169c281529ed9094090fb44a13f60e66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team_color: 0
+  team_color: 1
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 0
-  respownManager: {fileID: 0}
+  characterType: 1
   RespownTime: 0
-  weponName: 0
+  WeaponName: 0
   ai_status: 0
-  towerManager: {fileID: 0}
   CaptureTowerObject: {fileID: 0}
   DefenseTowerObject: {fileID: 0}
+  AttackObject: {fileID: 0}
+--- !u!114 &1613884014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613884006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e658bfc1e524494b9e54a1c92d8c1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animations: []
+  delayWeight: 0
+  isKeepFace: 0
+  isGUI: 1
 --- !u!1 &1628481594
 GameObject:
   m_ObjectHideFlags: 0
@@ -3781,6 +3861,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1705779063}
+    - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1705779066}
   m_SourcePrefab: {fileID: 100100000, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
 --- !u!1 &1705779058 stripped
 GameObject:
@@ -3853,16 +3936,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 169c281529ed9094090fb44a13f60e66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team_color: 0
+  team_color: 1
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 0
-  respownManager: {fileID: 0}
+  characterType: 1
   RespownTime: 0
-  weponName: 0
+  WeaponName: 0
   ai_status: 0
-  towerManager: {fileID: 0}
   CaptureTowerObject: {fileID: 0}
   DefenseTowerObject: {fileID: 0}
+  AttackObject: {fileID: 0}
+--- !u!114 &1705779066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705779058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e658bfc1e524494b9e54a1c92d8c1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animations: []
+  delayWeight: 0
+  isKeepFace: 0
+  isGUI: 1
 --- !u!1001 &1715121311
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4277,13 +4375,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eeb65f741d3f5a4c9880acbea24ebb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standRespownList: []
+  standRespawnList: []
   towerManager: {fileID: 1201979179}
-  respownPosition:
-  - {fileID: 836722536}
-  - {fileID: 104541649}
-  - {fileID: 1165587789}
-  - {fileID: 1514126543}
+  respawnPosition: []
 --- !u!4 &1825747147
 Transform:
   m_ObjectHideFlags: 0
@@ -4440,6 +4534,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1873806740}
+    - targetCorrespondingSourceObject: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1873806743}
   m_SourcePrefab: {fileID: 100100000, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
 --- !u!1 &1873806735 stripped
 GameObject:
@@ -4514,14 +4611,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 0
-  respownManager: {fileID: 0}
+  characterType: 1
   RespownTime: 0
-  weponName: 0
+  WeaponName: 0
   ai_status: 0
-  towerManager: {fileID: 0}
   CaptureTowerObject: {fileID: 0}
   DefenseTowerObject: {fileID: 0}
+  AttackObject: {fileID: 0}
+--- !u!114 &1873806743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1873806735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e658bfc1e524494b9e54a1c92d8c1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animations: []
+  delayWeight: 0
+  isKeepFace: 0
+  isGUI: 1
 --- !u!1 &1914478202
 GameObject:
   m_ObjectHideFlags: 0
@@ -5189,7 +5301,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2364118890420217995, guid: 1d423f0b1a5587240b406fa84675bbd3, type: 3}
       propertyPath: m_Size.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2364118890420217995, guid: 1d423f0b1a5587240b406fa84675bbd3, type: 3}
       propertyPath: m_Size.z

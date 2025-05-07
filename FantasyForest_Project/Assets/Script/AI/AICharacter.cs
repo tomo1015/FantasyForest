@@ -58,6 +58,7 @@ public class AICharacter : BaseCharacter
         get => DefenseTowerObject;
         set => DefenseTowerObject = value;
     }
+    [SerializeField]
     private GameObject AttackObject = null;
     public GameObject AttackTarget
     {
@@ -243,7 +244,15 @@ public class AICharacter : BaseCharacter
         
         if (IsAttackMode && AttackTarget != null)
         {
-            agent.SetDestination(AttackTarget.transform.position);
+            if (agent != null && agent.isActiveAndEnabled && agent.gameObject.activeInHierarchy && agent.isOnNavMesh)
+            {
+                agent.SetDestination(AttackTarget.transform.position);
+            }
+            else
+            {
+                // 必要に応じてデバッグログ
+                Debug.LogWarning($"{gameObject.name}: NavMeshAgentが無効、非アクティブ、またはNavMesh上にいません");
+            }
             AiStatus = AI_STATUS.ATTACK;
             return;
         }
@@ -307,6 +316,14 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void Capture()
     {
+        //占領中、対象ターゲットの占領範囲内に敵がいれば、対象を優先的に攻撃する
+        List<GameObject> blueCharaList = CaptureTower.GetComponent<Tower>()?.getBlueCharaList();
+        if(blueCharaList.Count > 0){
+            StopMovement();
+            AttackObject = blueCharaList[0].gameObject;
+            AiStatus = AI_STATUS.ATTACK;
+        }
+
         if(CaptureTower.GetComponent<Tower>()?.tower_color == team_color)
         {
             StopMovement();
@@ -334,12 +351,27 @@ public class AICharacter : BaseCharacter
         }
 
         Vector3 attackDiffPosition = AttackTarget.transform.position - agent.transform.position;
-        if (Vector3.Magnitude(attackDiffPosition) < ATTACK_RANGE)
+        float distance = Vector3.Magnitude(attackDiffPosition);
+        
+        // 攻撃対象の方向を向く
+        Vector3 targetDirection = attackDiffPosition.normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(targetDirection);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+
+        if (distance < ATTACK_RANGE)
         {
             StopMovement();
             base.StopAnimation(ANIMATION_STATE.RUN);
             base.PlayAnimation(ANIMATION_STATE.ATTACK);
             targetCharacter.WeaponTakeDamage(WEAPON.Sword);
+        }
+        else
+        {
+            // 攻撃範囲外なら対象に近づく
+            agent.isStopped = false;
+            Vector3 directionToTarget = (AttackTarget.transform.position - transform.position).normalized;
+            agent.destination = AttackTarget.transform.position - (directionToTarget * (ATTACK_RANGE / 2));
+            //base.PlayAnimation(ANIMATION_STATE.RUN);
         }
     }
 

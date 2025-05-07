@@ -61,7 +61,24 @@ public class RespawnManager : SingletonMonoBehaviour<RespawnManager>
     private void RespawnCharacter(BaseCharacter targetCharacter)
     {
         // リスポーン位置を取得
-        Vector3 respawnPos = GetRespawnPosition(targetCharacter);
+        Vector3 respawnPos;
+        List<GameObject> teamTowerList = targetCharacter.team_color == TEAM_COLOR.BLUE ? 
+            towerManager.getBlueTowerList() : towerManager.getRedTowerList();
+
+        // チームのメインタワーを探す
+        GameObject mainTower = teamTowerList.Find(tower => tower.GetComponent<Tower>().getIsMainTower());
+        
+        if (mainTower != null && mainTower.GetComponent<Tower>().IsTargetTowerRespown)
+        {
+            // メインタワーが存在し、リスポーン可能な場合はそこにリスポーン
+            respawnPos = mainTower.GetComponent<Tower>().TowerRespownLocation.transform.position;
+        }
+        else
+        {
+            // メインタワーが無い場合はデフォルトのリスポーン位置を使用
+            respawnPos = GetRespawnPosition(targetCharacter);
+        }
+
         targetCharacter.transform.position = respawnPos;
 
         // キャラクターを有効化し、ステータスを初期化
@@ -83,10 +100,14 @@ public class RespawnManager : SingletonMonoBehaviour<RespawnManager>
     /// </summary>
     private Vector3 GetDefaultRespawnPosition()
     {
-        // ランダムシードを現在時刻で初期化
+        if (respawnPosition == null || respawnPosition.Count == 0)
+        {
+            Debug.LogError("リスポーン位置が設定されていません");
+            return Vector3.zero;
+        }
+        
         UnityEngine.Random.InitState(DateTime.Now.Millisecond);
-        // ランダムなリスポーン位置を選択
-        int randomIndex = UnityEngine.Random.Range(1, 4);
+        int randomIndex = UnityEngine.Random.Range(0, respawnPosition.Count);
         return respawnPosition[randomIndex].transform.position;
     }
 

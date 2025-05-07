@@ -10,9 +10,11 @@ public class Tower : MonoBehaviour
     // タワーの状態
     private float captureGauge = 500;  // 占領状態を表すゲージ
 
+    [SerializeField]
     List<GameObject> blueCharaList = new List<GameObject>();  // 青チームのキャラリスト
     public List<GameObject> getBlueCharaList() { return blueCharaList; }
 
+    [SerializeField]
     List<GameObject> redCharaList = new List<GameObject>();  // 赤チームのキャラリスト
     public List<GameObject> getRedCharaList() { return redCharaList; }
 
