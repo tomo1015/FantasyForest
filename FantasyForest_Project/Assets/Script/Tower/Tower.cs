@@ -5,52 +5,51 @@ using Constants;
 
 public class Tower : MonoBehaviour
 {
-    public TEAM_COLOR tower_color;//ƒ^ƒ[‚ğè—Ì‚µ‚Ä‚¢‚éŒR
+    public TEAM_COLOR tower_color;  // ã‚¿ãƒ¯ãƒ¼ã®æ‰€å±ãƒãƒ¼ãƒ 
 
-    //ƒ^ƒ[‚Ìó‘Ô
-    private float captureGauge = 500;//è—Ìó‘Ô‚ğ•\‚·ƒQ[ƒW
+    // ã‚¿ãƒ¯ãƒ¼ã®çŠ¶æ…‹
+    private float captureGauge = 500;  // å é ˜çŠ¶æ…‹ã‚’è¡¨ã™ã‚²ãƒ¼ã‚¸
 
-    List<GameObject> blueCharaList = new List<GameObject>();//ÂŒR‚ÌƒLƒƒƒ‰ƒŠƒXƒg
+    List<GameObject> blueCharaList = new List<GameObject>();  // é’ãƒãƒ¼ãƒ ã®ã‚­ãƒ£ãƒ©ãƒªã‚¹ãƒˆ
     public List<GameObject> getBlueCharaList() { return blueCharaList; }
 
-    List<GameObject> redCharaList = new List<GameObject>();//ÔŒR‚ÌƒLƒƒƒ‰ƒŠƒXƒg
+    List<GameObject> redCharaList = new List<GameObject>();  // èµ¤ãƒãƒ¼ãƒ ã®ã‚­ãƒ£ãƒ©ãƒªã‚¹ãƒˆ
     public List<GameObject> getRedCharaList() { return redCharaList; }
 
-    private bool is_capture_blue = false;//Âƒ`[ƒ€‚ªè—Ì‚µ‚Ä‚¢‚éƒtƒ‰ƒO
-    private bool is_capture_red = false;//Ôƒ`[ƒ€‚ªè—Ì‚µ‚Ä‚¢‚éƒtƒ‰ƒO
-    private float blueCaptureLimit = 1000;//Âƒ`[ƒ€‚Ì‚à‚Ì‚Æ‚µ‚Äè—Ì‚Å‚«‚éƒQ[ƒWãŒÀ TODOFƒeƒXƒg
-    private float redCaptureLimit = 0;//Ôƒ`[ƒ€‚Ì‚à‚Ì‚Æ‚µ‚Äè—Ì‚Å‚«‚éƒQ[ƒWãŒÀ TODOFƒeƒXƒg
-    private float naturalCaptureLimit = 500;//’†—§‚Ì‚à‚Ì‚Æ‚µ‚Äˆµ‚¤ƒQ[ƒWãŒÀ
-    private float captureGaugeValue = 0.1f;//è—Ì’†‚ÌŠî–{ƒQ[ƒW‘¬“x
+    private bool is_capture_blue = false;  // é’ãƒãƒ¼ãƒ ãŒå é ˜ä¸­ãƒ•ãƒ©ã‚°
+    private bool is_capture_red = false;   // èµ¤ãƒãƒ¼ãƒ å é ˜ä¸­ãƒ•ãƒ©ã‚°
+    private float blueCaptureLimit = 1000; // é’ãƒãƒ¼ãƒ ã®å ´åˆã®å é ˜å¯èƒ½ã‚²ãƒ¼ã‚¸ä¸Šé™ TODOï¼šãƒ†ã‚¹ãƒˆ
+    private float redCaptureLimit = 0;     // èµ¤ãƒãƒ¼ãƒ ã®å ´åˆã®å é ˜å¯èƒ½ã‚²ãƒ¼ã‚¸ä¸Šé™ TODOï¼šãƒ†ã‚¹ãƒˆ
+    private float naturalCaptureLimit = 500;// ä¸­ç«‹ã®å ´åˆã®åŸºæº–ã‚²ãƒ¼ã‚¸å€¤
+    private float captureGaugeValue = 0.1f;// å é ˜æ™‚ã®åŸºæœ¬ã‚²ãƒ¼ã‚¸é€Ÿåº¦
     
-    private int captureRange = 25;//AI‚ª’â~‚·‚éƒ^ƒ[‚Ìè—Ì”ÍˆÍ
+    private int captureRange = 25;  // AIãŒå é ˜ã‚’è©¦ã¿ã‚‹ã‚¿ãƒ¯ãƒ¼ã®æœ‰åŠ¹ç¯„å›²
     public int getCaptureRange() { return captureRange; }
 
-    //–{‹’“_‚©‚Ç‚¤‚©
+    // æœ¬æ‹ åœ°ã‹ã©ã†ã‹
     [SerializeField]
     private bool isMainTower = false;
     public bool getIsMainTower() {  return isMainTower; }
 
-    //–h‰q’†‚ÌƒLƒƒƒ‰ƒNƒ^[î•ñ
+    // é˜²è¡›ä¸­ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼æ•°
     public List<GameObject> defenseCharacterList = new List<GameObject>();
 
     [SerializeField]
     private Material[] towerMaterials = new Material[3];
 
-    public Transform[] defensePatrolPosition;//„‰ñƒ|ƒCƒ“ƒg
+    public Transform[] defensePatrolPosition;  // å·¡å›ãƒã‚¤ãƒ³ãƒˆ
 
-    //“ƒ‚ÌŠÇ—ƒNƒ‰ƒX
+    // ã‚¿ãƒ¯ãƒ¼ç®¡ç†ã‚¯ãƒ©ã‚¹
     [SerializeField]
     private TowerManager towerManager;
     public GameObject TowerRespownLocation;
-    public bool IsTargetTowerRespown;//ƒ^ƒ[‚©‚çƒŠƒXƒ|[ƒ“‚Å‚«‚é‚©
+    public bool IsTargetTowerRespown;  // ã‚¿ãƒ¯ãƒ¼ã‹ã‚‰ãƒªã‚¹ãƒãƒ¼ãƒ³å¯èƒ½ã‹ã©ã†ã‹
 
-    //ƒ^ƒ[‚ÌƒQ[ƒWó‘Ôæ“¾
+    // ã‚¿ãƒ¯ãƒ¼ã®ã‚²ãƒ¼ã‚¸çŠ¶æ…‹å–å¾—
     public float GetGaptureGauge()
     {
         return captureGauge; 
     }
-
 
     // Start is called before the first frame update
     void Start()
@@ -61,80 +60,75 @@ public class Tower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //ƒ^ƒ[è—Ìˆ—
+        // ã‚¿ãƒ¯ãƒ¼å é ˜å‡¦ç†
         Capture();
 
-        //ƒ^ƒ[‚Ìó‘Ô‚ğ•Ï‚¦‚é
+        // ã‚¿ãƒ¯ãƒ¼ã®çŠ¶æ…‹ã‚’å¤‰æ›´
         CangeTower();
     }
 
     private void SetUpTower()
     {
-        //
-
-        //‰Šúİ’è‚Ìƒ^ƒ[‚É‚æ‚Á‚Äƒ^ƒ[‚ÌF‚ğ•ÏX
+        // åˆæœŸè¨­å®šã®ã‚¿ãƒ¯ãƒ¼ã«å¿œã˜ã¦ã‚¿ãƒ¯ãƒ¼ã®è‰²ã‚’å¤‰æ›´
         switch (tower_color)
         {
-            //TODOFƒƒ‚ƒŠ‹C‚ğ•t‚¯‚é
+            // TODOï¼šãƒãƒ†ãƒªã‚¢ãƒ«é©ç”¨
             case TEAM_COLOR.NATURAL:
                 tower_color = TEAM_COLOR.NATURAL;
                 captureGauge = naturalCaptureLimit;
-                //‰Šúİ’è‚ª’†—§ó‘Ô‚Ìƒ^ƒ[‚È‚ç
-                //gameObject.GetComponent<Renderer>().material.color = towerMaterials[1].color;
+                // åˆæœŸè¨­å®šãŒä¸­ç«‹çŠ¶æ…‹ã®ã‚¿ãƒ¯ãƒ¼ãªã‚‰
+                // gameObject.GetComponent<Renderer>().material.color = towerMaterials[1].color;
                 break;
             case TEAM_COLOR.RED:
                 tower_color = TEAM_COLOR.RED;
                 captureGauge = redCaptureLimit;
-                //‰Šúİ’è‚ªÔó‘Ô‚Ìƒ^ƒ[‚È‚ç
-                //gameObject.GetComponent<Renderer>().material.color = towerMaterials[0].color;
+                // åˆæœŸè¨­å®šãŒèµ¤çŠ¶æ…‹ã®ã‚¿ãƒ¯ãƒ¼ãªã‚‰
+                // gameObject.GetComponent<Renderer>().material.color = towerMaterials[0].color;
                 break;
             case TEAM_COLOR.BLUE:
                 tower_color = TEAM_COLOR.BLUE;
-                //‰ŠúƒQ[ƒW‚ğ•ÏX
+                // å é ˜ã‚²ãƒ¼ã‚¸ã‚’å¤‰æ›´
                 captureGauge = blueCaptureLimit;
-                //‰Šúİ’è‚ªÂó‘Ô‚Ìƒ^ƒ[‚È‚ç
-                //gameObject.GetComponent<Renderer>().material.color = towerMaterials[2].color;
+                // åˆæœŸè¨­å®šãŒé’çŠ¶æ…‹ã®ã‚¿ãƒ¯ãƒ¼ãªã‚‰
+                // gameObject.GetComponent<Renderer>().material.color = towerMaterials[2].color;
                 break;
         }
     }
 
     /// <summary>
-    /// ƒ^ƒ[è—Ìˆ—
+    /// ã‚¿ãƒ¯ãƒ¼å é ˜å‡¦ç†
     /// </summary>
     private void Capture()
     {
-        //ƒŠƒXƒg‚É‚¢‚È‚¯‚ê‚Îè—Ì’†‚Å‚Í‚È‚¢‚Æ”»’f‚·‚é
-        //if(blueCharaList.Count <= 0 && redCharaList.Count <= 0) { return; }
-
         if (blueCharaList.Count > redCharaList.Count)
         {
-            //Âƒ`[ƒ€‚Ìl”‚ªÔƒ`[ƒ€‚æ‚è‘½‚¯‚ê‚ÎÂƒ`[ƒ€‚ªè—Ì‚µ‚Ä‚¢‚é‚Æ”»’f
+            // é’ãƒãƒ¼ãƒ ã®äººæ•°ãŒèµ¤ãƒãƒ¼ãƒ ã‚ˆã‚Šå¤šã‘ã‚Œã°é’ãƒãƒ¼ãƒ ãŒå é ˜ä¸­ã¨åˆ¤å®š
             is_capture_blue = true;
             is_capture_red = false;
         } 
         else if(blueCharaList.Count < redCharaList.Count) {
-            //Âƒ`[ƒ€‚Ìl”‚ªÔƒ`[ƒ€‚æ‚è­‚È‚¯‚ê‚ÎÔƒ`[ƒ€‚ªè—Ì‚µ‚Ä‚¢‚é‚Æ”»’f
+            // é’ãƒãƒ¼ãƒ ã®äººæ•°ãŒèµ¤ãƒãƒ¼ãƒ ã‚ˆã‚Šå°‘ãªã‘ã‚Œã°èµ¤ãƒãƒ¼ãƒ ãŒå é ˜ä¸­ã¨åˆ¤å®š
             is_capture_blue = false;
             is_capture_red = true;
         }
         else
         {
-            //l”‚ª“¯‚¶‚Ìê‡‚Íè—Ì‚Å‚«‚È‚¢‚Æ‚·‚é
+            // äººæ•°ãŒåŒã˜å ´åˆã¯å é ˜ã§ããªã„ã¨ã™ã‚‹
             is_capture_blue = false;
             is_capture_red = false;
         }
 
-        //è—Ì’†‚Ìƒ`[ƒ€‚ª‚ ‚é•û‚É‘Î‰‚µ‚ÄƒQ[ƒW‚ğ‘Œ¸‚³‚¹‚é
+        // å é ˜ä¸­ã®ãƒãƒ¼ãƒ ã®çŠ¶æ³ã«å¿œã˜ã¦ã‚²ãƒ¼ã‚¸ã‚’å¢—æ¸›ã•ã›ã‚‹
         if (is_capture_blue) { 
-            //ãŒÀ‚É’B‚µ‚Ä‚¢‚éê‡‚Í‚»‚êˆÈãƒJƒEƒ“ƒg‚Í‘‚¦‚È‚¢
+            // ä¸Šé™ã«é”ã—ã¦ã„ã‚‹å ´åˆã¯ã“ã‚Œä»¥ä¸Šã‚«ã‚¦ãƒ³ãƒˆã¯è¡Œã‚ãªã„
             if(captureGauge > blueCaptureLimit) { return; }
 
-            //è—Ì’†‚Ìl”‚ª‘½‚¢‚Ù‚ÇAƒQ[ƒW‚Ì‘‰Á—Ê‚Í‘½‚¢
+            // å é ˜ä¸­ã®äººæ•°ãŒå¤šã„ã»ã©ã€ã‚²ãƒ¼ã‚¸ã®å¢—åŠ é‡ã¯å¤šã„
             captureGauge += (captureGaugeValue * blueCharaList.Count); 
         }
 
         if(is_capture_red) {
-            //ãŒÀ‚É’B‚µ‚Ä‚¢‚éê‡‚Í‚»‚êˆÈãƒJƒEƒ“ƒg‚Í‘‚¦‚È‚¢
+            // ä¸Šé™ã«é”ã—ã¦ã„ã‚‹å ´åˆã¯ã“ã‚Œä»¥ä¸Šã‚«ã‚¦ãƒ³ãƒˆã¯è¡Œã‚ãªã„
             if (captureGauge < redCaptureLimit) { return; }
 
             captureGauge -= (captureGaugeValue * redCharaList.Count); 
@@ -142,45 +136,44 @@ public class Tower : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒRƒ‰ƒCƒ_[”»’èˆ—
+    /// ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ä¾µå…¥å‡¦ç†
     /// </summary>
-    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
-        //ƒRƒ‰ƒCƒ_[‚É“ü‚Á‚Ä‚«‚½‚Ì‚ªÂƒ`[ƒ€‚È‚ç
+        // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã«å…¥ã£ã¦ããŸã®ãŒé’ãƒãƒ¼ãƒ ãªã‚‰
         if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.BLUE)
         {
-            //Âƒ`[ƒ€è—ÌƒŠƒXƒg‚É’Ç‰Á
+            // é’ãƒãƒ¼ãƒ å´ã®ãƒªã‚¹ãƒˆã«è¿½åŠ 
             blueCharaList.Add(other.gameObject);
         }
 
-        //ƒRƒ‰ƒCƒ_[‚É“ü‚Á‚Ä‚«‚½‚Ì‚ªÔƒ`[ƒ€‚È‚ç
+        // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã«å…¥ã£ã¦ããŸã®ãŒèµ¤ãƒãƒ¼ãƒ ãªã‚‰
         if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.RED)
         {
-            //Ôƒ`[ƒ€è—ÌƒŠƒXƒg‚É’Ç‰Á
+            // èµ¤ãƒãƒ¼ãƒ å´ã®ãƒªã‚¹ãƒˆã«è¿½åŠ 
             redCharaList.Add(other.gameObject);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        //ƒRƒ‰ƒCƒ_[‚©‚ço‚Äs‚Á‚½‚Ì‚ªÂƒ`[ƒ€‚È‚ç
+        // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰å‡ºã¦è¡Œã£ãŸã®ãŒé’ãƒãƒ¼ãƒ ãªã‚‰
         if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.BLUE)
         {
-            //è—ÌƒŠƒXƒg‚©‚çíœ
+            // é’ã®ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
             blueCharaList.Remove(other.gameObject);
         }
 
-        //ƒRƒ‰ƒCƒ_[‚©‚ço‚Äs‚Á‚½‚Ì‚ªÔƒ`[ƒ€‚È‚ç
+        // ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã‹ã‚‰å‡ºã¦è¡Œã£ãŸã®ãŒèµ¤ãƒãƒ¼ãƒ ãªã‚‰
         if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.RED)
         {
-            //è—ÌƒŠƒXƒg‚©‚çíœ
+            // èµ¤ã®ãƒªã‚¹ãƒˆã‹ã‚‰å‰Šé™¤
             redCharaList.Remove(other.gameObject);
         }
     }
 
     /// <summary>
-    /// ƒ^ƒ[‚Ìó‘Ô‚ğ•ÏX
+    /// ã‚¿ãƒ¯ãƒ¼ã®çŠ¶æ…‹ã‚’å¤‰æ›´
     /// </summary>
     private void CangeTower()
     {
@@ -189,10 +182,10 @@ public class Tower : MonoBehaviour
         List<GameObject> natureTowerList = towerManager.getNatureTowerList();
         if (captureGauge >= blueCaptureLimit)
         {
-            //ÂŒR‚É‚È‚Á‚½
+            // é’ãƒãƒ¼ãƒ ã®æ‰€æœ‰ã«å¤‰æ›´
             tower_color = TEAM_COLOR.BLUE;
-            //’†—§ó‘Ô‚Ìƒ^ƒ[ƒŠƒXƒg‚©‚çˆê’v‚·‚é‚à‚Ì‚ğíœ‚µ
-            //ÂŒR‚Ìƒ^ƒ[ƒŠƒXƒg‚É’Ç‰Á‚·‚é
+            // ä¸­ç«‹çŠ¶æ…‹ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã‹ã‚‰è©²å½“ã™ã‚‹ã‚‚ã®ã‚’å‰Šé™¤ã—
+            // é’ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
             if (natureTowerList.Contains(gameObject) == true)
             {
                 natureTowerList.Remove(gameObject);
@@ -201,10 +194,10 @@ public class Tower : MonoBehaviour
         }
         else if(captureGauge <= redCaptureLimit)
         {
-            //ÔŒR‚É‚È‚Á‚½
+            // èµ¤ãƒãƒ¼ãƒ ã®æ‰€æœ‰ã«å¤‰æ›´
             tower_color = TEAM_COLOR.RED;
-            //’†—§ó‘Ô‚Ìƒ^ƒ[ƒŠƒXƒg‚©‚çˆê’v‚·‚é‚à‚Ì‚ğíœ‚µ
-            //ÔŒR‚Ìƒ^ƒ[ƒŠƒXƒg‚É’Ç‰Á‚·‚é
+            // ä¸­ç«‹çŠ¶æ…‹ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã‹ã‚‰è©²å½“ã™ã‚‹ã‚‚ã®ã‚’å‰Šé™¤ã—
+            // èµ¤ãƒãƒ¼ãƒ ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
             if (natureTowerList.Contains(gameObject) == true)
             {
                 natureTowerList.Remove(gameObject);
@@ -213,19 +206,19 @@ public class Tower : MonoBehaviour
         } 
         else if(captureGauge == naturalCaptureLimit)
         {
-            //’†—§ó‘Ô‚É‚È‚Á‚½
+            // ä¸­ç«‹çŠ¶æ…‹ã«å¤‰æ›´
             tower_color = TEAM_COLOR.NATURAL;
 
             if (blueTowerList.Contains(gameObject) == true)
             {
-                //ÂŒR‚Ìƒ^ƒ[ƒŠƒXƒg‚É‚ ‚éê‡‚ÍƒŠƒXƒg‚©‚çœŠO
-                //’†—§ó‘Ô‚Ìƒ^ƒ[ƒŠƒXƒg‚Ö’Ç‰Á
+                // é’ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã«ã‚ã‚‹å ´åˆã¯ãƒªã‚¹ãƒˆã‹ã‚‰é™¤å¤–
+                // ä¸­ç«‹çŠ¶æ…‹ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã¸è¿½åŠ 
                 blueTowerList.Remove(gameObject);
                 natureTowerList.Add(gameObject);
 
             } else if(redTowerList.Contains(gameObject) == true){
-                //ÔŒR‚Ìƒ^ƒ[ƒŠƒXƒg‚É‚ ‚éê‡‚ÍƒŠƒXƒg‚©‚çœŠO
-                //’†—§ó‘Ô‚Ìƒ^ƒ[ƒŠƒXƒg‚Ö’Ç‰Á
+                // èµ¤ãƒãƒ¼ãƒ ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã«ã‚ã‚‹å ´åˆã¯ãƒªã‚¹ãƒˆã‹ã‚‰é™¤å¤–
+                // ä¸­ç«‹çŠ¶æ…‹ã®ã‚¿ãƒ¯ãƒ¼ãƒªã‚¹ãƒˆã¸è¿½åŠ 
                 redTowerList.Remove(gameObject);
                 natureTowerList.Add(gameObject);
             }

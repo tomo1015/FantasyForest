@@ -14,7 +14,6 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
     [SerializeField]
     List<GameObject> natureTowerList = new List<GameObject>();
 
-
     public List<GameObject> getBlueTowerList() { return blueTowerList; }
     public List<GameObject> getRedTowerList() { return redTowerList; }
     public List<GameObject> getNatureTowerList() { return natureTowerList; }
@@ -25,8 +24,8 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
 
     private void Start()
     {
-        //Q[V[ɂ^[IuWFNg
-        //Ԃ̃`[J[ɂďԂU蕪
+        // ゲームシーン内のタワーオブジェクトを
+        // 各チームカラーに応じて振り分け
         for(int i = 0; i < towerList.Count; i++){
             switch (towerList[i].GetComponent<Tower>().tower_color)
             {
@@ -47,6 +46,6 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
 
     private void Update()
     {
-        //^[̐̏ԂXV
+        // タワーの状態を更新
     }
 }

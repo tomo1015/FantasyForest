@@ -7,22 +7,22 @@ using UnityEngine.UIElements.Experimental;
 using System;
 
 /// <summary>
-/// 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｮ繝ｪ繧ｹ繝昴�繝ｳ繧堤ｮ｡逅�☆繧九け繝ｩ繧ｹ
+/// キャラクターのリスポーンを管理するクラス
 /// </summary>
 public class RespownManager : SingletonMonoBehaviour<RespownManager>
 {
     /// <summary>
-    /// 繝ｪ繧ｹ繝昴�繝ｳ蠕�ｩ滉ｸｭ縺ｮ繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繝ｪ繧ｹ繝
+    /// リスポーン待機中のキャラクターリスト
     /// </summary>
     public List<GameObject> standRespownList = new List<GameObject>();
 
     /// <summary>
-    /// 繝ｪ繧ｹ繝昴�繝ｳ縺ｾ縺ｧ縺ｮ蠕�ｩ滓凾髢
+    /// リスポーンまでの待機時間
     /// </summary>
     private const int RESPAWN_LIMIT_TIME = 100;
 
     /// <summary>
-    /// 繧ｿ繝ｯ繝ｼ邂｡逅�け繝ｩ繧ｹ
+    /// タワー管理クラス
     /// </summary>
     public TowerManager towerManager;
 
@@ -30,42 +30,48 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     private List<GameObject> respownPosition;
 
     /// <summary>
-    /// 繝ｪ繧ｹ繝昴�繝ｳ蜃ｦ逅�ｒ螳溯｡後☆繧
+    /// リスポーン処理を実行する
     /// </summary>
     private void exeRespown()
     {
+        // リスポーン待機リストが空の場合は処理を終了
         if (standRespownList.Count <= 0) { return; }
 
         for (int i = 0; i < standRespownList.Count; i++)
         {
             var targetCharacter = standRespownList[i].GetComponent<BaseCharacter>();
+            // リスポーン時間が制限時間に達した場合
             if (targetCharacter.RespownTime >= RESPAWN_LIMIT_TIME)
             {
+                // キャラクターをリスポーンさせる
                 RespawnCharacter(targetCharacter);
                 standRespownList.RemoveAt(i);
             }
             else
             {
+                // リスポーン待機時間をカウントアップ
                 targetCharacter.RespownTime++;
             }
         }
     }
 
     /// <summary>
-    /// 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧偵Μ繧ｹ繝昴�繝ｳ縺輔○繧
+    /// キャラクターをリスポーンさせる
     /// </summary>
     private void RespawnCharacter(BaseCharacter targetCharacter)
     {
+        // リスポーン位置を取得
         Vector3 respawnPos = GetRespawnPosition(targetCharacter);
         targetCharacter.transform.position = respawnPos;
 
+        // キャラクターを有効化し、ステータスを初期化
         targetCharacter.gameObject.SetActive(true);
         targetCharacter.CharacterStatus();
         targetCharacter.RespownTime = 0;
     }
 
     /// <summary>
-    /// 繝√�繝縺ｫ蠢懊§縺溘Μ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧貞叙蠕励☆繧
+    /// チームに応じたリスポーン位置を取得する
     /// </summary>
     private Vector3 GetRespawnPosition(BaseCharacter targetCharacter)
     {
@@ -85,10 +91,11 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     }
 
     /// <summary>
-    /// 繝√�繝縺ｮ繧ｿ繝ｯ繝ｼ縺ｫ蝓ｺ縺･縺�※繝ｪ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧呈ｱｺ螳壹☆繧
+    /// チームのタワーに基づいてリスポーン位置を決定する
     /// </summary>
     private Vector3 GetTeamRespawnPosition(int towerCount, List<GameObject> towerList, BaseCharacter targetCharacter)
     {
+        // タワーが存在しない場合はデフォルトのリスポーン位置を返す
         if (towerCount <= 0)
         {
             return GetDefaultRespawnPosition();
@@ -98,17 +105,19 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     }
 
     /// <summary>
-    /// 繝�ヵ繧ｩ繝ｫ繝医�繝ｪ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧貞叙蠕励☆繧
+    /// デフォルトのリスポーン位置を取得する
     /// </summary>
     private Vector3 GetDefaultRespawnPosition()
     {
+        // ランダムシードを現在時刻で初期化
         UnityEngine.Random.InitState(DateTime.Now.Millisecond);
+        // ランダムなリスポーン位置を選択
         int randomIndex = UnityEngine.Random.Range(1, 4);
         return respownPosition[randomIndex].transform.position;
     }
 
     /// <summary>
-    /// 譛繧りｿ代＞繧ｿ繝ｯ繝ｼ縺ｮ繝ｪ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧呈爾縺
+    /// 最も近いタワーのリスポーン位置を探す
     /// </summary>
     private Vector3 FindNearestTowerRespawnPosition(List<GameObject> towerList, BaseCharacter targetCharacter)
     {
@@ -118,8 +127,10 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
         foreach (GameObject tower in towerList)
         {
             var towerComponent = tower.GetComponent<Tower>();
+            // リスポーン不可能なタワーはスキップ
             if (!towerComponent.IsTargetTowerRespown) { continue; }
 
+            // タワーとキャラクター間の距離を計算
             float distance = Vector3.Distance(tower.transform.position, targetCharacter.transform.position);
             if (distance < nearestDistance)
             {
