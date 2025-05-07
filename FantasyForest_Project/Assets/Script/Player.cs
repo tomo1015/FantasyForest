@@ -60,9 +60,10 @@ public class Player : BaseCharacter
     {
         float moveX = Input.GetAxisRaw("Vertical");
         float moveZ = Input.GetAxisRaw("Horizontal");
+        moveDirection = new Vector3(moveX, 0, moveZ);
+        moveDirection.Normalize();//正規化（斜めの距離が長くなるのを防ぐ）
 
-        moveDirection = new Vector3(moveX, 0, moveZ).normalized;
-        moveVelocity = moveDirection * getCharacterSpeed();
+        moveVelocity = moveDirection * getCharacterSpeed() / 2;
     }
 
     /// <summary>

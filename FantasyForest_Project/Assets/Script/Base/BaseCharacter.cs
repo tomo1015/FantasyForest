@@ -156,7 +156,7 @@ public abstract class BaseCharacter : MonoBehaviour
             case WEPON.NONE:
                 break;
             case WEPON.Sword:
-                current_hp -= 2;
+                current_hp -= 50;
                 break;
             case WEPON.Bow:
                 current_hp -= 1;
@@ -177,15 +177,15 @@ public abstract class BaseCharacter : MonoBehaviour
         {
             case CHARACTER_TYPE.CAT:
                 max_hp = 100;//最大HP
-                speed = 100;
+                speed = 30;
                 break;
             case CHARACTER_TYPE.ELF:
                 max_hp = 150;
-                speed = 50;
+                speed = 25;
                 break;
             case CHARACTER_TYPE.GOLEM:
                 max_hp = 300;
-                speed = 30;
+                speed = 10;
                 break;
             default:
                 break;

@@ -1,30 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Constants;
-using System;
-using Unity.VisualScripting;
 
 public class AICharacter : BaseCharacter
 {
     /// <summary>
-    /// タワー占拠の判定距離
+    /// 繧ｿ繝ｯ繝ｼ蜊諡縺ｮ蛻､螳夊ｷ晞屬
     /// </summary>
     private const float TOWER_CAPTURE_RANGE = 30f;
 
     /// <summary>
-    /// 攻撃可能な距離
+    /// 謾ｻ謦�庄閭ｽ縺ｪ霍晞屬
     /// </summary>
     private const float ATTACK_RANGE = 10f;
 
     /// <summary>
-    /// 防御時の移動速度倍率
+    /// 髦ｲ蠕｡譎ゅ�遘ｻ蜍暮溷ｺｦ蛟咲紫
     /// </summary>
     private const float DEFENSE_SPEED_MULTIPLIER = 0.5f;
 
     /// <summary>
-    /// 防御時の加速度
+    /// 髦ｲ蠕｡譎ゅ�蜉騾溷ｺｦ
     /// </summary>
     private const float DEFENSE_ACCELERATION = 50f;
 
@@ -32,7 +28,7 @@ public class AICharacter : BaseCharacter
     private NavMeshAgent agent;
     public NavMeshAgent NavMeshAgent => agent;
 
-    // AIの状態管理
+    // AI縺ｮ迥ｶ諷狗ｮ｡逅
     [SerializeField]
     private AI_STATUS ai_status;
     public AI_STATUS AiStatus
@@ -41,10 +37,10 @@ public class AICharacter : BaseCharacter
         set => ai_status = value;
     }
 
-    // タワー管理クラス
+    // 繧ｿ繝ｯ繝ｼ邂｡逅�け繝ｩ繧ｹ
     public TowerManager towerManager;
 
-    // 占拠目標のタワーオブジェクト
+    // 蜊諡逶ｮ讓吶�繧ｿ繝ｯ繝ｼ繧ｪ繝悶ず繧ｧ繧ｯ繝
     [SerializeField]
     private GameObject CaptureTowerObject = null;
     public GameObject CaptureTower
@@ -53,7 +49,7 @@ public class AICharacter : BaseCharacter
         set => CaptureTowerObject = value;
     }
 
-    // 防御対象のタワーオブジェクト
+    // 髦ｲ蠕｡蟇ｾ雎｡縺ｮ繧ｿ繝ｯ繝ｼ繧ｪ繝悶ず繧ｧ繧ｯ繝
     [SerializeField]
     private GameObject DefenseTowerObject = null;
     public GameObject DefenseTower
@@ -61,8 +57,6 @@ public class AICharacter : BaseCharacter
         get => DefenseTowerObject;
         set => DefenseTowerObject = value;
     }
-
-    // 攻撃対象のキャラクターオブジェクト
     private GameObject AttackObject = null;
     public GameObject AttackTarget
     {
@@ -70,7 +64,7 @@ public class AICharacter : BaseCharacter
         set => AttackObject = value;
     }
 
-    // 攻撃モードかどうか
+    // 謾ｻ謦�Δ繝ｼ繝峨°縺ｩ縺�°
     private bool isAttackMode = false;
     public bool IsAttackMode
     {
@@ -78,65 +72,62 @@ public class AICharacter : BaseCharacter
         set => isAttackMode = value;
     }
 
-    // パトロールカウンター
+    // 繝代ヨ繝ｭ繝ｼ繝ｫ繧ｫ繧ｦ繝ｳ繧ｿ繝ｼ
     private int PatrolCount = 0;
 
     protected override void Start()
     {
-        // 基底クラスのStartメソッドを呼び出す
+        // 蝓ｺ蠎輔け繝ｩ繧ｹ縺ｮStart繝｡繧ｽ繝�ラ繧貞他縺ｳ蜃ｺ縺
         base.Start();
-
-        // エージェントの取得
+        
+        // 繧ｨ繝ｼ繧ｸ繧ｧ繝ｳ繝医�蜿門ｾ
         agent = GetComponent<NavMeshAgent>();
-        ai_status = AI_STATUS.NONE; // AIの初期状態を設定
-    }
+        ai_status = AI_STATUS.NONE; // AI縺ｮ蛻晄悄迥ｶ諷九ｒ險ｭ螳
 
     protected override void Update()
     {
-        // HPの更新
+        // HP縺ｮ譖ｴ譁ｰ
         base.Update();
 
-        // AIのアクティブ状態の確認
-        bool is_active = getActive();
-
-        // アクティブでない場合は処理を終了
+        // 繧｢繧ｯ繝�ぅ繝悶〒縺ｪ縺�ｴ蜷医�蜃ｦ逅�ｒ邨ゆｺ
         if (!is_active) { return; }
 
+        //AIステータス管理
         switch (ai_status)
         {
             case AI_STATUS.NONE:
-                // 検索状態に移行
+                // 讀懃ｴ｢迥ｶ諷九↓遘ｻ陦
                 ai_status = AI_STATUS.SEARCH;
                 break;
             case AI_STATUS.SEARCH:
-                // タワーの探索
+                // 繧ｿ繝ｯ繝ｼ縺ｮ謗｢邏｢
                 TowerSearch();
                 break;
             case AI_STATUS.CAPTURE:
-                // 占拠の実行
+                // 蜊諡縺ｮ螳溯｡
                 Capture();
                 break;
             case AI_STATUS.MOVE:
-                // 移動の実行
+                // 遘ｻ蜍輔�螳溯｡
                 Move();
                 break;
             case AI_STATUS.ATTACK:
-                // 攻撃の実行
+                // 謾ｻ謦��螳溯｡
                 Attack();
                 break;
             case AI_STATUS.DEFENSE:
-                // 防御の実行
+                // 髦ｲ蠕｡縺ｮ螳溯｡
                 Defense();
                 break;
-            default: 
-                break; 
+            default:
+                break;
         }
     }
 
     /// <summary>
-    /// 指定チームのタワーを探索し、最適なCaptureTowerObjectを設定する共通メソッド
+    /// 謖�ｮ壹メ繝ｼ繝縺ｮ繧ｿ繝ｯ繝ｼ繧呈爾邏｢縺励∵怙驕ｩ縺ｪCaptureTowerObject繧定ｨｭ螳壹☆繧句�騾壹Γ繧ｽ繝�ラ
     /// </summary>
-    /// <param name="searchColor">探索対象のチームカラー</param>
+    /// <param name="searchColor">謗｢邏｢蟇ｾ雎｡縺ｮ繝√�繝繧ｫ繝ｩ繝ｼ</param>
     private void SearchTower(TEAM_COLOR searchColor)
     {
         int blueTowerCount = towerManager.getBlueTowerCount();
@@ -147,7 +138,7 @@ public class AICharacter : BaseCharacter
         List<GameObject> redTowerList = towerManager.getRedTowerList();
         List<GameObject> natureTowerList = towerManager.getNatureTowerList();
 
-        // 中立タワーがあれば最も近いものを優先
+        // 荳ｭ遶九ち繝ｯ繝ｼ縺後≠繧後�譛繧りｿ代＞繧ゅ�繧貞━蜈
         if (natureTowerCount > 0)
         {
             float nearDis = float.MaxValue;
@@ -163,7 +154,7 @@ public class AICharacter : BaseCharacter
             return;
         }
 
-        // 敵タワーが多い場合は敵タワーを優先
+        // 謨ｵ繧ｿ繝ｯ繝ｼ縺悟､壹＞蝣ｴ蜷医�謨ｵ繧ｿ繝ｯ繝ｼ繧貞━蜈
         if ((searchColor == TEAM_COLOR.BLUE && blueTowerCount < redTowerCount) ||
             (searchColor == TEAM_COLOR.RED && redTowerCount < blueTowerCount))
         {
@@ -181,7 +172,7 @@ public class AICharacter : BaseCharacter
             return;
         }
 
-        // それ以外は自チームのタワーで最も近いもの
+        // 縺昴ｌ莉･螟悶�閾ｪ繝√�繝縺ｮ繧ｿ繝ｯ繝ｼ縺ｧ譛繧りｿ代＞繧ゅ�
         var selfList = (searchColor == TEAM_COLOR.BLUE) ? blueTowerList : redTowerList;
         float selfNearDis = float.MaxValue;
         foreach (GameObject selfTower in selfList)
@@ -196,7 +187,7 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// 青チーム用のタワー探索処理
+    /// 髱偵メ繝ｼ繝逕ｨ縺ｮ繧ｿ繝ｯ繝ｼ謗｢邏｢蜃ｦ逅
     /// </summary>
     private void BlueTowerSearch()
     {
@@ -204,7 +195,7 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// 赤チーム用のタワー探索処理
+    /// 襍､繝√�繝逕ｨ縺ｮ繧ｿ繝ｯ繝ｼ謗｢邏｢蜃ｦ逅
     /// </summary>
     private void RedTowerSearch()
     {
@@ -212,7 +203,7 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// タワーの探索を実行し、最適な目標を設定する
+    /// 繧ｿ繝ｯ繝ｼ縺ｮ謗｢邏｢繧貞ｮ溯｡後＠縲∵怙驕ｩ縺ｪ逶ｮ讓吶ｒ險ｭ螳壹☆繧
     /// </summary>
     private void TowerSearch()
     {
@@ -227,20 +218,18 @@ public class AICharacter : BaseCharacter
             default:
                 break;
         }
-
         agent.SetDestination(CaptureTower.transform.position);
         agent.speed = getCharacterSpeed();
         agent.acceleration = getCharacterSpeed();
-        agent.velocity = new Vector3(50,0,50);
+        agent.velocity = new Vector3(50, 0, 50);
         agent.isStopped = false;
-
         base.PlayAnimation(ANIMATION_STATE.RUN);
         AiStatus = AI_STATUS.MOVE;
     }
 
     /// <summary>
-    /// キャラクターの移動を制御する
-    /// 攻撃モード時は攻撃対象へ、通常時は占拠目標のタワーへ移動
+    /// 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｮ遘ｻ蜍輔ｒ蛻ｶ蠕｡縺吶ｋ
+    /// 謾ｻ謦�Δ繝ｼ繝画凾縺ｯ謾ｻ謦�ｯｾ雎｡縺ｸ縲�壼ｸｸ譎ゅ�蜊諡逶ｮ讓吶�繧ｿ繝ｯ繝ｼ縺ｸ遘ｻ蜍
     /// </summary>
     private void Move()
     {
@@ -249,7 +238,7 @@ public class AICharacter : BaseCharacter
             AiStatus = AI_STATUS.SEARCH;
             return;
         }
-
+        
         if (IsAttackMode && AttackTarget != null)
         {
             agent.SetDestination(AttackTarget.transform.position);
@@ -270,12 +259,13 @@ public class AICharacter : BaseCharacter
             else
             {
                 AiStatus = AI_STATUS.CAPTURE;
+
             }
         }
     }
 
     /// <summary>
-    /// キャラクターの移動を停止させる
+    /// 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｮ遘ｻ蜍輔ｒ蛛懈ｭ｢縺輔○繧
     /// </summary>
     private void StopMovement()
     {
@@ -286,8 +276,8 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// 防御モードに切り替える
-    /// タワーの防御リストに追加し、パトロール位置を設定する
+    /// 髦ｲ蠕｡繝｢繝ｼ繝峨↓蛻�ｊ譖ｿ縺医ｋ
+    /// 繧ｿ繝ｯ繝ｼ縺ｮ髦ｲ蠕｡繝ｪ繧ｹ繝医↓霑ｽ蜉縺励√ヱ繝医Ο繝ｼ繝ｫ菴咲ｽｮ繧定ｨｭ螳壹☆繧
     /// </summary>
     private void SwitchToDefenseMode()
     {
@@ -310,8 +300,8 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// タワーの占拠を実行する
-    /// タワーが自チームのものになった場合は探索状態に戻る
+    /// 繧ｿ繝ｯ繝ｼ縺ｮ蜊諡繧貞ｮ溯｡後☆繧
+    /// 繧ｿ繝ｯ繝ｼ縺瑚�繝√�繝縺ｮ繧ゅ�縺ｫ縺ｪ縺｣縺溷ｴ蜷医�謗｢邏｢迥ｶ諷九↓謌ｻ繧
     /// </summary>
     private void Capture()
     {
@@ -323,8 +313,8 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// 攻撃対象への攻撃を実行する
-    /// 攻撃範囲内に入った場合のみ攻撃を実行
+    /// 謾ｻ謦�ｯｾ雎｡縺ｸ縺ｮ謾ｻ謦�ｒ螳溯｡後☆繧
+    /// 謾ｻ謦�ｯ�峇蜀�↓蜈･縺｣縺溷ｴ蜷医�縺ｿ謾ｻ謦�ｒ螳溯｡
     /// </summary>
     private void Attack()
     {
@@ -352,7 +342,7 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// 攻撃モードを終了し、探索状態に戻る
+    /// 謾ｻ謦�Δ繝ｼ繝峨ｒ邨ゆｺ�＠縲∵爾邏｢迥ｶ諷九↓謌ｻ繧
     /// </summary>
     private void StopAttackMode()
     {
@@ -363,8 +353,8 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// タワーの防御を実行する
-    /// パトロール位置を巡回しながら防御を行う
+    /// 繧ｿ繝ｯ繝ｼ縺ｮ髦ｲ蠕｡繧貞ｮ溯｡後☆繧
+    /// 繝代ヨ繝ｭ繝ｼ繝ｫ菴咲ｽｮ繧貞ｷ｡蝗槭＠縺ｪ縺後ｉ髦ｲ蠕｡繧定｡後≧
     /// </summary>
     private void Defense()
     {

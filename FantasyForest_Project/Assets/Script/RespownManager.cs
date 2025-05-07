@@ -7,22 +7,22 @@ using UnityEngine.UIElements.Experimental;
 using System;
 
 /// <summary>
-/// キャラクターのリスポーンを管理するクラス
+/// 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｮ繝ｪ繧ｹ繝昴�繝ｳ繧堤ｮ｡逅�☆繧九け繝ｩ繧ｹ
 /// </summary>
 public class RespownManager : SingletonMonoBehaviour<RespownManager>
 {
     /// <summary>
-    /// リスポーン待機中のキャラクターリスト
+    /// 繝ｪ繧ｹ繝昴�繝ｳ蠕�ｩ滉ｸｭ縺ｮ繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繝ｪ繧ｹ繝
     /// </summary>
     public List<GameObject> standRespownList = new List<GameObject>();
 
     /// <summary>
-    /// リスポーンまでの待機時間
+    /// 繝ｪ繧ｹ繝昴�繝ｳ縺ｾ縺ｧ縺ｮ蠕�ｩ滓凾髢
     /// </summary>
     private const int RESPAWN_LIMIT_TIME = 100;
 
     /// <summary>
-    /// タワー管理クラス
+    /// 繧ｿ繝ｯ繝ｼ邂｡逅�け繝ｩ繧ｹ
     /// </summary>
     public TowerManager towerManager;
 
@@ -30,7 +30,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     private List<GameObject> respownPosition;
 
     /// <summary>
-    /// リスポーン処理を実行する
+    /// 繝ｪ繧ｹ繝昴�繝ｳ蜃ｦ逅�ｒ螳溯｡後☆繧
     /// </summary>
     private void exeRespown()
     {
@@ -52,7 +52,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     }
 
     /// <summary>
-    /// キャラクターをリスポーンさせる
+    /// 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧偵Μ繧ｹ繝昴�繝ｳ縺輔○繧
     /// </summary>
     private void RespawnCharacter(BaseCharacter targetCharacter)
     {
@@ -65,7 +65,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     }
 
     /// <summary>
-    /// チームに応じたリスポーン位置を取得する
+    /// 繝√�繝縺ｫ蠢懊§縺溘Μ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧貞叙蠕励☆繧
     /// </summary>
     private Vector3 GetRespawnPosition(BaseCharacter targetCharacter)
     {
@@ -85,7 +85,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     }
 
     /// <summary>
-    /// チームのタワーに基づいてリスポーン位置を決定する
+    /// 繝√�繝縺ｮ繧ｿ繝ｯ繝ｼ縺ｫ蝓ｺ縺･縺�※繝ｪ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧呈ｱｺ螳壹☆繧
     /// </summary>
     private Vector3 GetTeamRespawnPosition(int towerCount, List<GameObject> towerList, BaseCharacter targetCharacter)
     {
@@ -98,7 +98,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     }
 
     /// <summary>
-    /// デフォルトのリスポーン位置を取得する
+    /// 繝�ヵ繧ｩ繝ｫ繝医�繝ｪ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧貞叙蠕励☆繧
     /// </summary>
     private Vector3 GetDefaultRespawnPosition()
     {
@@ -108,7 +108,7 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     }
 
     /// <summary>
-    /// 最も近いタワーのリスポーン位置を探す
+    /// 譛繧りｿ代＞繧ｿ繝ｯ繝ｼ縺ｮ繝ｪ繧ｹ繝昴�繝ｳ菴咲ｽｮ繧呈爾縺
     /// </summary>
     private Vector3 FindNearestTowerRespawnPosition(List<GameObject> towerList, BaseCharacter targetCharacter)
     {
