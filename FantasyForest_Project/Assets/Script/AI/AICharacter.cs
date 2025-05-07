@@ -82,6 +82,8 @@ public class AICharacter : BaseCharacter
         // 基底クラスのStartメソッドを呼び出す
         base.Start();
 
+        isAttackMode = false;//攻撃状態の初期化
+
         // エージェントの取得
         agent = GetComponent<NavMeshAgent>();
         // TowerManagerの取得
@@ -93,7 +95,10 @@ public class AICharacter : BaseCharacter
     {
         // HPの更新
         base.Update();
-
+        //更新した結果いなくなった場合はAIのステータスを初期化する
+        if(base.getActive() == false){
+            ai_status = AI_STATUS.NONE;
+        }
 
         // AIステータス管理
         switch (ai_status)
@@ -342,15 +347,8 @@ public class AICharacter : BaseCharacter
             return;
         }
 
-        //占領中、対象ターゲットの占領範囲内に敵がいれば、対象を優先的に攻撃する
-        List<GameObject> blueCharaList = tower.getBlueCharaList();
-        if (blueCharaList != null && blueCharaList.Count > 0)
-        {
-            StopMovement();
-            AttackTarget = blueCharaList[0].gameObject;
-            AiStatus = AI_STATUS.ATTACK;
-            return;
-        }
+        //占領中、攻撃エリアの範囲を変更する
+        ChangeChildBoxColliderSize("AttackSearchArea",new Vector3(10f,0.5f,10f));
 
         if (tower.tower_color == team_color)
         {
@@ -396,7 +394,7 @@ public class AICharacter : BaseCharacter
             //AIステータスは初期化する
             if(!targetCharacter.getActive()){
                 AttackTarget = null;
-                AiStatus = AI_STATUS.SEARCH;
+                AiStatus = AI_STATUS.NONE;
             }
         }
         else
@@ -442,6 +440,32 @@ public class AICharacter : BaseCharacter
         {
             agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
             PatrolCount = (PatrolCount + 1) % defenseTower.defensePatrolPosition.Length;
+        }
+    }
+
+    /// <summary>
+    /// 子オブジェクトのBoxColliderのサイズを変更する
+    /// </summary>
+    /// <param name="childName">子オブジェクトの名前</param>
+    /// <param name="newSize">新しいサイズ</param>
+    private void ChangeChildBoxColliderSize(string childName, Vector3 newSize)
+    {
+        Transform childTransform = transform.Find(childName);
+        if (childTransform != null)
+        {
+            BoxCollider boxCollider = childTransform.GetComponent<BoxCollider>();
+            if (boxCollider != null)
+            {
+                boxCollider.size = newSize;
+            }
+            else
+            {
+                Debug.LogWarning($"BoxCollider not found on child object: {childName}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Child object not found: {childName}");
         }
     }
 }
