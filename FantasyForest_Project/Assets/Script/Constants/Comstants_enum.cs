@@ -34,14 +34,6 @@ namespace Constants
         DOWN
     }
 
-    public enum WEPON
-    {
-        NONE = 0,
-        Sword, // 剣
-        Bow,   // 弓（遠距離攻撃）
-        Arrow, // 矢
-    }
-
     /// <summary>
     /// キャラクターのタイプ
     /// </summary>

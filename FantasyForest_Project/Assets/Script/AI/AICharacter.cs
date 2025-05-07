@@ -339,7 +339,7 @@ public class AICharacter : BaseCharacter
             StopMovement();
             base.StopAnimation(ANIMATION_STATE.RUN);
             base.PlayAnimation(ANIMATION_STATE.ATTACK);
-            targetCharacter.WeponTakeDamege(WEPON.Sword);
+            targetCharacter.WeaponTakeDamage(WEAPON.Sword);
         }
     }
 
