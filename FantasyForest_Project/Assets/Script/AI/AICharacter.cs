@@ -4,93 +4,119 @@ using Constants;
 
 public class AICharacter : BaseCharacter
 {
-    //ƒiƒrƒƒbƒVƒ…ƒG[ƒWƒFƒ“ƒg
-    private NavMeshAgent agent;
-    public NavMeshAgent getNavmeshAgent() { return agent; }
+    /// <summary>
+    /// ç¹§ï½¿ç¹ï½¯ç¹ï½¼èœŠè«¡ç¸ºï½®è›»ï½¤è³å¤Šï½·æ™å±¬
+    /// </summary>
+    private const float TOWER_CAPTURE_RANGE = 30f;
 
-    //AI‚Ìó‘ÔŠÇ—
+    /// <summary>
+    /// è¬¾ï½»è¬¦ï¿½åº„é–­ï½½ç¸ºï½ªéœæ™å±¬
+    /// </summary>
+    private const float ATTACK_RANGE = 10f;
+
+    /// <summary>
+    /// é«¦ï½²è •ï½¡è­ã‚…ï¿½é˜ï½»èœæš®æº·ï½ºï½¦è›Ÿå’²ç´«
+    /// </summary>
+    private const float DEFENSE_SPEED_MULTIPLIER = 0.5f;
+
+    /// <summary>
+    /// é«¦ï½²è •ï½¡è­ã‚…ï¿½èœ‰é¨¾æº·ï½ºï½¦
+    /// </summary>
+    private const float DEFENSE_ACCELERATION = 50f;
+
+    // NavMeshAgent
+    private NavMeshAgent agent;
+    public NavMeshAgent NavMeshAgent => agent;
+
+    // AIç¸ºï½®è¿¥ï½¶è«·ç‹—ï½®ï½¡é€…
     [SerializeField]
     private AI_STATUS ai_status;
-    public AI_STATUS getAiStatus() { return ai_status; }
-    public void setAiStatus(AI_STATUS setStatus) { ai_status = setStatus; }
-    private AI_STATUS pre_ai_status;
-    public AI_STATUS getPreAiStatus() { return pre_ai_status; }
-    public void setPreAiStatus(AI_STATUS setStatus) { pre_ai_status = setStatus; }
+    public AI_STATUS AiStatus
+    {
+        get => ai_status;
+        set => ai_status = value;
+    }
 
-    //“ƒ‚ÌŠÇ—ƒNƒ‰ƒX
+    // ç¹§ï½¿ç¹ï½¯ç¹ï½¼é‚‚ï½¡é€…ï¿½ã‘ç¹ï½©ç¹§ï½¹
     public TowerManager towerManager;
 
-    //’Š‘I‚ÅŠm’è‚³‚¹‚½è—Ì‚·‚é“ƒ‚ÌƒIƒuƒWƒFƒNƒg
+    // èœŠè«¡é€¶ï½®è®“å¶ï¿½ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¹§ï½ªç¹æ‚¶ãšç¹§ï½§ç¹§ï½¯ç¹
     [SerializeField]
     private GameObject CaptureTowerObject = null;
-    public GameObject getCaptureObject() { return CaptureTowerObject; }
-    public void setCaptureObject(GameObject value) { CaptureTowerObject = value; }
+    public GameObject CaptureTower
+    {
+        get => CaptureTowerObject;
+        set => CaptureTowerObject = value;
+    }
 
-    //ƒLƒƒƒ‰ƒNƒ^[‚ª–h‰q‚·‚éƒ^ƒ[‚ÌƒIƒuƒWƒFƒNƒg
+    // é«¦ï½²è •ï½¡èŸ‡ï½¾é›ï½¡ç¸ºï½®ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¹§ï½ªç¹æ‚¶ãšç¹§ï½§ç¹§ï½¯ç¹
     [SerializeField]
     private GameObject DefenseTowerObject = null;
-    public GameObject getDefenseTowerObject() { return DefenseTowerObject; }
-    public void setDefenseTowerObject(GameObject value) { DefenseTowerObject = value; }
-
-    //UŒ‚”ÍˆÍ“à‚É“ü‚Á‚Ä‚«‚½ƒLƒƒƒ‰ƒNƒ^[ƒIƒuƒWƒFƒNƒg
-    [SerializeField]
+    public GameObject DefenseTower
+    {
+        get => DefenseTowerObject;
+        set => DefenseTowerObject = value;
+    }
     private GameObject AttackObject = null;
-    public GameObject getAttackObject() { return AttackObject; }
-    public void setAttackObject(GameObject value) { AttackObject = value; }
+    public GameObject AttackTarget
+    {
+        get => AttackObject;
+        set => AttackObject = value;
+    }
 
-    //UŒ‚ó‘Ô‚©‚Ç‚¤‚©
+    // è¬¾ï½»è¬¦ï¿½Î”ç¹ï½¼ç¹å³¨Â°ç¸ºï½©ç¸ºï¿½Â°
     private bool isAttackMode = false;
-    public bool getIsAttackMode() { return isAttackMode; }
-    public void setIsAttackMode(bool value) { isAttackMode = value; }
+    public bool IsAttackMode
+    {
+        get => isAttackMode;
+        set => isAttackMode = value;
+    }
 
-
-    //ƒ^ƒ[‚Ìü‚è‚ğ‰ñ‚é—p
+    // ç¹ä»£ãƒ¨ç¹ï½­ç¹ï½¼ç¹ï½«ç¹§ï½«ç¹§ï½¦ç¹ï½³ç¹§ï½¿ç¹ï½¼
     private int PatrolCount = 0;
 
     protected override void Start()
     {
-        //Šî–{ƒNƒ‰ƒX‚Ìˆ—
+        // è“ï½ºè è¼”ã‘ç¹ï½©ç¹§ï½¹ç¸ºï½®Startç¹ï½¡ç¹§ï½½ç¹ï¿½ãƒ©ç¹§è²ä»–ç¸ºï½³èœƒï½ºç¸º
         base.Start();
-
-        //‚±‚ÌƒNƒ‰ƒX‚¾‚¯‚Ìˆ—
-        agent = GetComponent<NavMeshAgent>();//ƒiƒrƒƒbƒVƒ…ƒG[ƒWƒFƒ“ƒgæ“¾
-        ai_status = AI_STATUS.NONE;//AI‚Ìó‘Ô‚ğˆê’U‰Šúó‘Ô‚Ö•ÏX
-        pre_ai_status = AI_STATUS.NONE;
-    }
+        
+        // ç¹§ï½¨ç¹ï½¼ç¹§ï½¸ç¹§ï½§ç¹ï½³ç¹åŒ»ï¿½èœ¿é–€ï½¾
+        agent = GetComponent<NavMeshAgent>();
+        ai_status = AI_STATUS.NONE; // AIç¸ºï½®è›»æ™„æ‚„è¿¥ï½¶è«·ä¹ï½’éšªï½­è³
 
     protected override void Update()
     {
-        //HPŠÇ—ˆ—
+        // HPç¸ºï½®è­–ï½´è­ï½°
         base.Update();
 
-        //¶‘¶‚µ‚Ä‚¢‚È‚¢‚È‚çˆ—‚µ‚È‚¢
-        if (!getActive()) { return; }
+        // ç¹§ï½¢ç¹§ï½¯ç¹ï¿½ã…ç¹æ‚¶ã€’ç¸ºï½ªç¸ºï¿½ï½´èœ·åŒ»ï¿½èœƒï½¦é€…ï¿½ï½’é‚¨ã‚†ï½º
+        if (!is_active) { return; }
 
-        //AIƒXƒe[ƒ^ƒXŠÇ—
+        //AIã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ç®¡ç†
         switch (ai_status)
         {
             case AI_STATUS.NONE:
-                //‰Šúó‘Ô‚Ì‚Íˆê’U’Š‘Iˆ—‚É‚·‚é
+                // è®€æ‡ƒï½´ï½¢è¿¥ï½¶è«·ä¹â†“é˜ï½»é™¦
                 ai_status = AI_STATUS.SEARCH;
                 break;
             case AI_STATUS.SEARCH:
-                //’Tõˆ—Às
+                // ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºï½®è¬—ï½¢é‚ï½¢
                 TowerSearch();
                 break;
             case AI_STATUS.CAPTURE:
-                //è—Ìˆ—Às
+                // èœŠè«¡ç¸ºï½®è³æº¯ï½¡
                 Capture();
                 break;
             case AI_STATUS.MOVE:
-                //ˆÚ“®ˆ—Às
+                // é˜ï½»èœè¼”ï¿½è³æº¯ï½¡
                 Move();
                 break;
             case AI_STATUS.ATTACK:
-                //UŒ‚ˆ—Às
+                // è¬¾ï½»è¬¦ï¿½ï¿½è³æº¯ï½¡
                 Attack();
                 break;
             case AI_STATUS.DEFENSE:
-                //–h‰qˆ—
+                // é«¦ï½²è •ï½¡ç¸ºï½®è³æº¯ï½¡
                 Defense();
                 break;
             default:
@@ -99,11 +125,88 @@ public class AICharacter : BaseCharacter
     }
 
     /// <summary>
-    /// ƒ^ƒ[‚Ì’Tõˆ—
+    /// è¬–ï¿½ï½®å£¹ãƒ¡ç¹ï½¼ç¹ç¸ºï½®ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¹§å‘ˆçˆ¾é‚ï½¢ç¸ºåŠ±âˆµæ€™é©•ï½©ç¸ºï½ªCaptureTowerObjectç¹§å®šï½¨ï½­è³å£¹â˜†ç¹§å¥ï¿½é¨¾å£¹Î“ç¹§ï½½ç¹ï¿½ãƒ©
+    /// </summary>
+    /// <param name="searchColor">è¬—ï½¢é‚ï½¢èŸ‡ï½¾é›ï½¡ç¸ºï½®ç¹âˆšï¿½ç¹ç¹§ï½«ç¹ï½©ç¹ï½¼</param>
+    private void SearchTower(TEAM_COLOR searchColor)
+    {
+        int blueTowerCount = towerManager.getBlueTowerCount();
+        int redTowerCount = towerManager.getRedTowerCount();
+        int natureTowerCount = towerManager.getNatureTowerCount();
+
+        List<GameObject> blueTowerList = towerManager.getBlueTowerList();
+        List<GameObject> redTowerList = towerManager.getRedTowerList();
+        List<GameObject> natureTowerList = towerManager.getNatureTowerList();
+
+        // è³ï½­é¶ä¹ã¡ç¹ï½¯ç¹ï½¼ç¸ºå¾Œâ‰ ç¹§å¾Œï¿½è­›ç¹§ã‚Šï½¿ä»£ï¼ç¹§ã‚…ï¿½ç¹§è²â”èœˆ
+        if (natureTowerCount > 0)
+        {
+            float nearDis = float.MaxValue;
+            foreach (GameObject natureTower in natureTowerList)
+            {
+                float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
+                if (distance < nearDis)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = natureTower;
+                }
+            }
+            return;
+        }
+
+        // è¬¨ï½µç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºæ‚Ÿï½¤å£¹ï¼è£ï½´èœ·åŒ»ï¿½è¬¨ï½µç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¹§è²â”èœˆ
+        if ((searchColor == TEAM_COLOR.BLUE && blueTowerCount < redTowerCount) ||
+            (searchColor == TEAM_COLOR.RED && redTowerCount < blueTowerCount))
+        {
+            var targetList = (searchColor == TEAM_COLOR.BLUE) ? redTowerList : blueTowerList;
+            float nearDis = float.MaxValue;
+            foreach (GameObject targetTower in targetList)
+            {
+                float distance = Vector3.Distance(targetTower.transform.position, agent.transform.position);
+                if (distance < nearDis)
+                {
+                    nearDis = distance;
+                    CaptureTowerObject = targetTower;
+                }
+            }
+            return;
+        }
+
+        // ç¸ºæ˜´ï½Œè‰ï½¥èŸæ‚¶ï¿½é–¾ï½ªç¹âˆšï¿½ç¹ç¸ºï½®ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºï½§è­›ç¹§ã‚Šï½¿ä»£ï¼ç¹§ã‚…ï¿½
+        var selfList = (searchColor == TEAM_COLOR.BLUE) ? blueTowerList : redTowerList;
+        float selfNearDis = float.MaxValue;
+        foreach (GameObject selfTower in selfList)
+        {
+            float distance = Vector3.Distance(selfTower.transform.position, agent.transform.position);
+            if (distance < selfNearDis)
+            {
+                selfNearDis = distance;
+                CaptureTowerObject = selfTower;
+            }
+        }
+    }
+
+    /// <summary>
+    /// é«±åµãƒ¡ç¹ï½¼ç¹é€•ï½¨ç¸ºï½®ç¹§ï½¿ç¹ï½¯ç¹ï½¼è¬—ï½¢é‚ï½¢èœƒï½¦é€…
+    /// </summary>
+    private void BlueTowerSearch()
+    {
+        SearchTower(TEAM_COLOR.BLUE);
+    }
+
+    /// <summary>
+    /// è¥ï½¤ç¹âˆšï¿½ç¹é€•ï½¨ç¸ºï½®ç¹§ï½¿ç¹ï½¯ç¹ï½¼è¬—ï½¢é‚ï½¢èœƒï½¦é€…
+    /// </summary>
+    private void RedTowerSearch()
+    {
+        SearchTower(TEAM_COLOR.RED);
+    }
+
+    /// <summary>
+    /// ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºï½®è¬—ï½¢é‚ï½¢ç¹§è²ï½®æº¯ï½¡å¾Œï¼ ç¸²âˆµæ€™é©•ï½©ç¸ºï½ªé€¶ï½®è®“å¶ï½’éšªï½­è³å£¹â˜†ç¹§
     /// </summary>
     private void TowerSearch()
     {
-        //ƒLƒƒƒ‰ƒNƒ^[‚ÌŠ‘®ŒR‚É‚æ‚Á‚Äˆ—‚ª•Ï‚í‚é
         switch (team_color)
         {
             case TEAM_COLOR.BLUE:
@@ -115,318 +218,162 @@ public class AICharacter : BaseCharacter
             default:
                 break;
         }
-
-        //ˆÚ“®ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶ŠJn
-        base.PlayAnimation(ANIMATION_STATE.RUN);
-
-        //–Úw‚·ƒ^ƒ[‚ÌˆÊ’u‚ğ“ü—Í
-        agent.SetDestination(CaptureTowerObject.transform.position);
-
-        //ˆÚ“®‘¬“xİ’è
+        agent.SetDestination(CaptureTower.transform.position);
         agent.speed = getCharacterSpeed();
         agent.acceleration = getCharacterSpeed();
         agent.velocity = new Vector3(50, 0, 50);
         agent.isStopped = false;
-
-        //ˆÚ“®‚·‚é‚×‚«ƒ^ƒ[‚ªŒ©‚Â‚©‚Á‚½‚Ì‚ÅAAI‚ÌƒXƒe[ƒg‚ğˆÚ“®‚É•ÏX
-        ai_status = AI_STATUS.MOVE;
+        base.PlayAnimation(ANIMATION_STATE.RUN);
+        AiStatus = AI_STATUS.MOVE;
     }
 
-
     /// <summary>
-    /// ˆÚ“®ˆ—
+    /// ç¹§ï½­ç¹ï½£ç¹ï½©ç¹§ï½¯ç¹§ï½¿ç¹ï½¼ç¸ºï½®é˜ï½»èœè¼”ï½’è›»ï½¶è •ï½¡ç¸ºå¶ï½‹
+    /// è¬¾ï½»è¬¦ï¿½Î”ç¹ï½¼ç¹ç”»å‡¾ç¸ºï½¯è¬¾ï½»è¬¦ï¿½ï½¯ï½¾é›ï½¡ç¸ºï½¸ç¸²ï¿½å£¼ï½¸ï½¸è­ã‚…ï¿½èœŠè«¡é€¶ï½®è®“å¶ï¿½ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºï½¸é˜ï½»èœ
     /// </summary>
     private void Move()
     {
-        //Šî–{“I‚É‚Í’Tõ‚ÉŒ©‚Â‚¯‚½ƒ^ƒ[‚ÖŒü‚©‚¤
-        //“r’†‚Å“G‚Æ‘˜‹ö‚µ‚½ê‡iƒRƒ‰ƒCƒ_[‚É“ü‚Á‚½ê‡j‚Íƒ^[ƒQƒbƒg‚ğ•ÏX‚·‚éB
-        //ƒ^[ƒQƒbƒg‚É‹ß‚Ã‚¢‚½ê‡‚Ì‚İUŒ‚ƒXƒe[ƒg‚Ö•ÏX
-        if (isAttackMode)
+        if (CaptureTower == null)
         {
-            //UŒ‚ˆÊ’u‚Ì•ûŒü‚Öİ’è
-            agent.SetDestination(AttackObject.transform.position);
-
-            //ƒXƒe[ƒg‚ğUŒ‚‚Ö•ÏX
-            ai_status = AI_STATUS.ATTACK;
-
-            //ƒXƒe[ƒg‚ğ•ÏX‚µ‚½‚Ì‚Å‚±‚êˆÈ~‚Ìˆ—‚Í‚È‚µ
+            AiStatus = AI_STATUS.SEARCH;
+            return;
+        }
+        
+        if (IsAttackMode && AttackTarget != null)
+        {
+            agent.SetDestination(AttackTarget.transform.position);
+            AiStatus = AI_STATUS.ATTACK;
             return;
         }
 
-
-        //è—Ì”ÍˆÍ“à‚Å‚Í‚È‚¢‚ª–Ú“I’n‚É‹ß‚Ã‚¢‚½ê‡‚Í
-        //‘–‚éƒAƒjƒ[ƒVƒ‡ƒ“‚©‚ç•àsƒAƒjƒ[ƒVƒ‡ƒ“‚Ö•ÏX
-        Vector3 TowerDiffPosition = CaptureTowerObject.transform.position - agent.transform.position;
-        //ƒ^ƒ[‚É‹ß‚Ã‚¢‚½ê‡iè—Ì”ÍˆÍ“àj‚Í
-        //ˆÚ“®‚ğ’â~‚µAè—ÌƒXƒe[ƒg‚Ö•ÏX
-
-        //ƒ^ƒ[‚Æ‚Ì‹——£‚ªˆê’èˆÈ‰º‚È‚ç
-        if (Vector3.Magnitude(TowerDiffPosition) < CaptureTowerObject.GetComponent<Tower>().getCaptureRange())
+        Vector3 towerDiffPosition = CaptureTower.transform.position - agent.transform.position;
+        if (Vector3.Magnitude(towerDiffPosition) < TOWER_CAPTURE_RANGE)
         {
-            if (CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
+            StopMovement();
+            base.StopAnimation(ANIMATION_STATE.RUN);
+
+            if (CaptureTower.GetComponent<Tower>()?.tower_color == team_color)
             {
-                //ˆÚ“®ƒAƒjƒ[ƒVƒ‡ƒ“
-                base.PlayAnimation(ANIMATION_STATE.RUN);
-
-                //–Ú“I‚Æ‚·‚éƒ^ƒ[‚ª©ŒR‚Ì‚à‚Ì‚È‚çƒXƒe[ƒ^ƒX‚ğ–h‰qó‘Ô‚Ö•ÏX
-                ai_status = AI_STATUS.DEFENSE;
-
-                DefenseTowerObject = CaptureTowerObject;//–h‰q—p‚Ìƒ^ƒ[ƒIƒuƒWƒFƒNƒg‚ÖˆÚ“®
-                CaptureTowerObject = null;//è—Ì‚Ì–Ú•W‚Ìƒ^ƒ[ƒIƒuƒWƒFƒNƒg‚ğ”jŠü
-
-                var defenseTower = DefenseTowerObject.GetComponent<Tower>();
-
-                //ƒ^ƒ[‚Ì–h‰q‚ğs‚Á‚Ä‚¢‚éƒLƒƒƒ‰ƒNƒ^[ƒŠƒXƒg‚Ö“ü‚ê‚é
-                defenseTower.defenseCharacterList.Add(gameObject);
-                //–h‰qó‘Ô‚ÉˆÚ“®‚·‚éÛ‚ÉˆÚ“®ˆÊ’u‚ğŒˆ‚ß‚é
-                agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
-
-                //–h‰q‚ÌˆÚ“®ó‘Ôİ’è
-                agent.speed = getCharacterSpeed() / 2;//ˆÚ“®‚ÌƒXƒs[ƒh‚Ì”¼•ª
-                agent.acceleration = 50;
-                agent.isStopped = false;
+                SwitchToDefenseMode();
             }
             else
             {
-                //ˆÚ“®ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~
-                base.StopAnimation(ANIMATION_STATE.RUN);
+                AiStatus = AI_STATUS.CAPTURE;
 
-                //ƒ^ƒ[è—Ì”ÍˆÍ“à
-                agent.speed = 0;
-                agent.acceleration = 0;
-                agent.velocity = Vector3.zero;
-                agent.isStopped = true;
-
-                //ƒ^ƒ[‚ª©ŒR‚Ì‚à‚Ì‚Å‚È‚¢‚È‚çƒXƒe[ƒ^ƒX‚ğè—Ìó‘Ô‚Ö•ÏX
-                ai_status = AI_STATUS.CAPTURE;
             }
         }
     }
 
     /// <summary>
-    /// è—Ìˆ—
+    /// ç¹§ï½­ç¹ï½£ç¹ï½©ç¹§ï½¯ç¹§ï½¿ç¹ï½¼ç¸ºï½®é˜ï½»èœè¼”ï½’è››æ‡ˆï½­ï½¢ç¸ºè¼”â—‹ç¹§
+    /// </summary>
+    private void StopMovement()
+    {
+        agent.speed = 0;
+        agent.acceleration = 0;
+        agent.velocity = Vector3.zero;
+        agent.isStopped = true;
+    }
+
+    /// <summary>
+    /// é«¦ï½²è •ï½¡ç¹ï½¢ç¹ï½¼ç¹å³¨â†“è›»ï¿½ï½Šè­–ï½¿ç¸ºåŒ»ï½‹
+    /// ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºï½®é«¦ï½²è •ï½¡ç¹ï½ªç¹§ï½¹ç¹åŒ»â†“éœ‘ï½½èœ‰ç¸ºåŠ±âˆšãƒ±ç¹åŒ»ÎŸç¹ï½¼ç¹ï½«è´å’²ï½½ï½®ç¹§å®šï½¨ï½­è³å£¹â˜†ç¹§
+    /// </summary>
+    private void SwitchToDefenseMode()
+    {
+        AiStatus = AI_STATUS.DEFENSE;
+        DefenseTower = CaptureTower;
+        CaptureTower = null;
+
+        var defenseTower = DefenseTower.GetComponent<Tower>();
+        if (defenseTower != null)
+        {
+            defenseTower.defenseCharacterList.Add(gameObject);
+            agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
+
+            agent.speed = getCharacterSpeed() * DEFENSE_SPEED_MULTIPLIER;
+            agent.acceleration = DEFENSE_ACCELERATION;
+            agent.isStopped = false;
+
+            base.PlayAnimation(ANIMATION_STATE.RUN);
+        }
+    }
+
+    /// <summary>
+    /// ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºï½®èœŠè«¡ç¹§è²ï½®æº¯ï½¡å¾Œâ˜†ç¹§
+    /// ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºç‘šï¿½ç¹âˆšï¿½ç¹ç¸ºï½®ç¹§ã‚…ï¿½ç¸ºï½«ç¸ºï½ªç¸ºï½£ç¸ºæº·ï½´èœ·åŒ»ï¿½è¬—ï½¢é‚ï½¢è¿¥ï½¶è«·ä¹â†“è¬Œï½»ç¹§
     /// </summary>
     private void Capture()
     {
-        //ƒ^ƒ[‚ğè—Ì’†‚ÉAUŒ‚”ÍˆÍ“à‚É“G‚ª“ü‚Á‚Ä‚«‚½‚ç
-        //‚»‚Ì“G‚ğƒ^[ƒQƒbƒg‚Æ‚·‚é
-        if(AttackObject != null)
+        if(CaptureTower.GetComponent<Tower>()?.tower_color == team_color)
         {
-            ai_status = AI_STATUS.ATTACK;
-            return;
-        }
-
-        //è—Ìó‘Ô
-        //ƒ^[ƒQƒbƒg‚Æ‚µ‚½“ƒ‚Ìè—Ì‚ª©ŒR‚Ì‚à‚Ì‚É‚È‚Á‚½‚ç
-        //AI‚ÌƒXƒe[ƒg‚ğƒ^ƒ[’Tõ‚Ö•ÏX
-        if (CaptureTowerObject.GetComponent<Tower>().tower_color == team_color)
-        {
-            agent.speed = 0;
-            agent.acceleration = 0;
-            agent.velocity = Vector3.zero;
-            agent.isStopped = true;
-
-            ai_status = AI_STATUS.SEARCH;
+            StopMovement();
+            AiStatus = AI_STATUS.SEARCH;
         }
     }
 
     /// <summary>
-    /// UŒ‚ˆ—
+    /// è¬¾ï½»è¬¦ï¿½ï½¯ï½¾é›ï½¡ç¸ºï½¸ç¸ºï½®è¬¾ï½»è¬¦ï¿½ï½’è³æº¯ï½¡å¾Œâ˜†ç¹§
+    /// è¬¾ï½»è¬¦ï¿½ï½¯ï¿½å³‡èœ€ï¿½â†“èœˆï½¥ç¸ºï½£ç¸ºæº·ï½´èœ·åŒ»ï¿½ç¸ºï½¿è¬¾ï½»è¬¦ï¿½ï½’è³æº¯ï½¡
     /// </summary>
     private void Attack()
     {
-        var AttackTarget = AttackObject.GetComponent<BaseCharacter>();
-        //UŒ‚‘ÎÛ‚Ì“G‚ª“|‚ê‚½ê‡‚ÍUŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~‚µ‚Äƒ^ƒ[’Tõˆ—‚Ö
-        if (AttackTarget.getActive() == false)
+        if (AttackTarget == null)
         {
-            //UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“’â~
-            base.StopAnimation(ANIMATION_STATE.ATTACK);
-            //UŒ‚‘ÎÛƒŠƒZƒbƒg
-            isAttackMode = false;
-            AttackObject = null;
-
-            //ƒ^ƒ[’Tõ‚ÖƒXƒe[ƒg•ÏX
-            ai_status = AI_STATUS.SEARCH;
-        }
-        else
-        {
-            //‘ÎÛ‚ÌƒLƒƒƒ‰ƒNƒ^[‚É‹ß‚Ã‚¢‚½‚çAUŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶‚³‚¹‚é
-            Vector3 AttackDiffPosition = AttackTarget.transform.position - agent.transform.position;
-            //TODOFUŒ‚”ÍˆÍ‚Í‘•”õ‚µ‚Ä‚¢‚é•Ší‚É‚æ‚Á‚Ä•Ï‚í‚é‚à‚Ì‚Æ‚·‚é
-            if (Vector3.Magnitude(AttackDiffPosition) < 10)
-            {
-                //ˆÚ“®‚ğ’â~
-                agent.speed = 0;
-                agent.acceleration = 0;
-                agent.velocity = Vector3.zero;
-                agent.isStopped = true;
-                base.StopAnimation(ANIMATION_STATE.RUN);
-
-                //UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶
-                base.PlayAnimation(ANIMATION_STATE.ATTACK);
-
-                //TODOF‰¼‚ÅUŒ‚
-                //‘Šè‘¤‚ÌHP‚ğŒ¸‚ç‚·
-                AttackTarget.WeponTakeDamege(WEPON.Sword);
-            }
-        }
-    }
-
-    /// <summary>
-    /// –h‰qˆ—
-    /// </summary>
-    private void Defense()
-    {
-        var defenseTower = DefenseTowerObject.GetComponent<Tower>();
-
-        //–h‰q’†‚Ìê‡‚É©ŒR‚Ì–h‰qƒ^ƒ[”‚ªˆê’è”ˆÈ‰º‚É‚È‚Á‚½‚çA
-        //ƒ^ƒ[’Tõˆ—‚ÖƒXƒe[ƒg‚ğ•ÏX
-
-
-        //ƒ^ƒ[‚Ìü‚è‚ğ„‰ñ‚·‚é‚æ‚¤‚É–h‰q‚·‚é
-        //„‰ñ“r’†‚É“GƒLƒƒƒ‰ƒNƒ^[‚ªƒ^ƒ[‚Ìè—Ì”ÍˆÍ“à‚É‚¢‚é‚È‚ç‚Î
-        //è—Ì’†‚Ì“G‚ÉŒü‚©‚¢AUŒ‚ƒXƒe[ƒg‚Ö•ÏX‚·‚é
-        switch (team_color)
-        {
-            case TEAM_COLOR.BLUE:
-                //ÂŒR‚Ìê‡‚ÍÔŒR‚Ìî•ñ
-                if (defenseTower.getRedCharaList().Count > 0 && AttackObject == null)
-                {
-                    float nearDis = 0.0f;
-                    foreach (GameObject redCharacterAgent in defenseTower.getRedCharaList())
-                    {
-                        float distance = Vector3.Distance(redCharacterAgent.transform.position, agent.transform.position);
-                        if (nearDis == 0 || nearDis > distance)
-                        {
-                            nearDis = distance;
-                            AttackObject = redCharacterAgent;
-                            isAttackMode = true;//UŒ‚ó‘Ô‚Ö
-                        }
-                    }
-                }
-                break;
-            case TEAM_COLOR.RED:
-                break;
-            default:
-                break;
-        }
-
-
-        if (defenseTower.defensePatrolPosition.Length == 0)
-        {
-            //ˆ—‚µ‚È‚¢
+            StopAttackMode();
             return;
         }
 
-        //‘Ò‹@ƒ|ƒCƒ“ƒg‚É‹ß‚Ã‚¢‚½‚ç
+        var targetCharacter = AttackTarget.GetComponent<BaseCharacter>();
+        if (targetCharacter == null || !targetCharacter.getActive())
+        {
+            StopAttackMode();
+            return;
+        }
+
+        Vector3 attackDiffPosition = AttackTarget.transform.position - agent.transform.position;
+        if (Vector3.Magnitude(attackDiffPosition) < ATTACK_RANGE)
+        {
+            StopMovement();
+            base.StopAnimation(ANIMATION_STATE.RUN);
+            base.PlayAnimation(ANIMATION_STATE.ATTACK);
+            targetCharacter.WeponTakeDamege(WEPON.Sword);
+        }
+    }
+
+    /// <summary>
+    /// è¬¾ï½»è¬¦ï¿½Î”ç¹ï½¼ç¹å³¨ï½’é‚¨ã‚†ï½ºï¿½ï¼ ç¸²âˆµçˆ¾é‚ï½¢è¿¥ï½¶è«·ä¹â†“è¬Œï½»ç¹§
+    /// </summary>
+    private void StopAttackMode()
+    {
+        base.StopAnimation(ANIMATION_STATE.ATTACK);
+        IsAttackMode = false;
+        AttackTarget = null;
+        AiStatus = AI_STATUS.SEARCH;
+    }
+
+    /// <summary>
+    /// ç¹§ï½¿ç¹ï½¯ç¹ï½¼ç¸ºï½®é«¦ï½²è •ï½¡ç¹§è²ï½®æº¯ï½¡å¾Œâ˜†ç¹§
+    /// ç¹ä»£ãƒ¨ç¹ï½­ç¹ï½¼ç¹ï½«è´å’²ï½½ï½®ç¹§è²ï½·ï½¡è—æ§­ï¼ ç¸ºï½ªç¸ºå¾Œï½‰é«¦ï½²è •ï½¡ç¹§å®šï½¡å¾Œâ‰§
+    /// </summary>
+    private void Defense()
+    {
+        if (DefenseTower == null)
+        {
+            AiStatus = AI_STATUS.SEARCH;
+            return;
+        }
+
+        var defenseTower = DefenseTower.GetComponent<Tower>();
+        if (defenseTower == null || defenseTower.defensePatrolPosition.Length == 0)
+        {
+            return;
+        }
+
         if (!agent.pathPending && agent.remainingDistance < 0.1f)
         {
-            //Ÿ‚ÌˆÚ“®æ‚ğŒˆ‚ß‚ÄˆÚ“®‚³‚¹‚é
             agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
             PatrolCount = (PatrolCount + 1) % defenseTower.defensePatrolPosition.Length;
-        }
-    }
-
-    /// <summary>
-    /// ÂŒR‚Ìƒ^ƒ[’Tõˆ—
-    /// </summary>
-    private void BlueTowerSearch()
-    {
-        if (towerManager.getNatureTowerList().Count > 0)
-        {
-            //’†—§ƒ^ƒ[ƒŠƒXƒg‚Ì’†‚©‚ç‹——£‚ªˆê”Ô‹ß‚¢‚à‚Ì‚ğ–Úw‚·
-            float nearDis = 0.0f;
-            foreach (GameObject natureTower in towerManager.getNatureTowerList())
-            {
-                float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
-                if (nearDis == 0 || nearDis > distance)
-                {
-                    nearDis = distance;
-                    CaptureTowerObject = natureTower;
-                }
-            }
-        }
-        else if (towerManager.getBlueTowerList().Count < towerManager.getRedTowerList().Count)
-        {
-            float nearDis = 0.0f;
-            foreach (GameObject redTower in towerManager.getRedTowerList())
-            {
-                float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
-                if (nearDis == 0 || nearDis < distance)
-                {
-                    nearDis = distance;
-                    CaptureTowerObject = redTower;
-                }
-            }
-        }
-        else
-        {
-            //©ŒRƒ^ƒ[‚ª‘½‚¢ê‡‚Í©ŒRè—Ìƒ^ƒ[ƒŠƒXƒg‚©‚ç
-            //Œ»İ‚ÌˆÊ’u‚Éˆê”Ô‹ß‚¢‚à‚Ì‚ğƒ^[ƒQƒbƒg‚Æ‚·‚éiƒ^ƒ[‚Ì–h‰qj
-            //’†—§ƒ^ƒ[ƒŠƒXƒg‚Ì’†‚©‚ç‹——£‚ªˆê”Ô‹ß‚¢‚à‚Ì‚ğ–Úw‚·
-            float nearDis = 0.0f;
-            foreach (GameObject blueTower in towerManager.getBlueTowerList())
-            {
-                float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
-                if (nearDis == 0 || nearDis > distance)
-                {
-                    nearDis = distance;
-                    CaptureTowerObject = blueTower;
-                }
-            }
-        }
-    }
-
-
-    /// <summary>
-    /// ÔŒR‚Ìƒ^ƒ[’Tõˆ—
-    /// </summary>
-    private void RedTowerSearch()
-    {
-        if (towerManager.getNatureTowerList().Count > 0)
-        {
-            //’†—§ƒ^ƒ[ƒŠƒXƒg‚Ì’†‚©‚ç‹——£‚ªˆê”Ô‹ß‚¢‚à‚Ì‚ğ–Úw‚·
-            float nearDis = 0.0f;
-            foreach (GameObject natureTower in towerManager.getNatureTowerList())
-            {
-                float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
-                if (nearDis == 0 || nearDis > distance)
-                {
-                    nearDis = distance;
-                    CaptureTowerObject = natureTower;
-                }
-            }
-        }
-        else if (towerManager.getRedTowerList().Count < towerManager.getBlueTowerList().Count)
-        {
-            //“GŒR‚Ìƒ^ƒ[‚ª©ŒRƒ^ƒ[‚æ‚è‘½‚¢‚Ì‚Å‚ ‚ê‚Î
-            //“GŒR‚Æ‚µ‚Äè—Ì‚³‚ê‚Ä‚¢‚éƒ^ƒ[‚Ì‚¤‚¿‚©‚ç©•ª‚Æ‚Ì‹——£‚ªˆê”Ô‰“‚¢‚à‚Ì‚ğ–Úw‚·iƒ^ƒ[‚Ö‚ÌUŒ‚è—Ìj
-            float nearDis = 0.0f;
-            foreach (GameObject redTower in towerManager.getRedTowerList())
-            {
-                float distance = Vector3.Distance(redTower.transform.position, agent.transform.position);
-                if (nearDis == 0 || nearDis < distance)
-                {
-                    nearDis = distance;
-                    CaptureTowerObject = redTower;
-                }
-            }
-        }
-        else
-        {
-            //©ŒRƒ^ƒ[‚ª‘½‚¢ê‡‚Í©ŒRè—Ìƒ^ƒ[ƒŠƒXƒg‚©‚ç
-            //Œ»İ‚ÌˆÊ’u‚Éˆê”Ô‹ß‚¢‚à‚Ì‚ğƒ^[ƒQƒbƒg‚Æ‚·‚éiƒ^ƒ[‚Ì–h‰qj
-            //’†—§ƒ^ƒ[ƒŠƒXƒg‚Ì’†‚©‚ç‹——£‚ªˆê”Ô‹ß‚¢‚à‚Ì‚ğ–Úw‚·
-            float nearDis = 0.0f;
-            foreach (GameObject blueTower in towerManager.getBlueTowerList())
-            {
-                float distance = Vector3.Distance(blueTower.transform.position, agent.transform.position);
-                if (nearDis == 0 || nearDis > distance)
-                {
-                    nearDis = distance;
-                    CaptureTowerObject = blueTower;
-                }
-            }
         }
     }
 }
