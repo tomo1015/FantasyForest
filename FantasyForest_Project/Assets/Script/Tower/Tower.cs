@@ -8,7 +8,14 @@ public class Tower : MonoBehaviour
     public TEAM_COLOR tower_color;  // タワーの所属チーム
 
     // タワーの状態
-    private float captureGauge = 500;  // 占領状態を表すゲージ
+    private const float DEFAULT_CAPTURE_GAUGE = 500f;
+    private const float BLUE_CAPTURE_LIMIT = 1000f;
+    private const float RED_CAPTURE_LIMIT = 0f;
+    private const float NATURAL_CAPTURE_LIMIT = 500f;
+    private const float CAPTURE_GAUGE_VALUE = 0.1f;
+    private const int CAPTURE_RANGE = 25;
+
+    private float captureGauge = DEFAULT_CAPTURE_GAUGE;  // 占領状態を表すゲージ
 
     [SerializeField]
     List<GameObject> blueCharaList = new List<GameObject>();  // 青チームのキャラリスト
@@ -20,12 +27,12 @@ public class Tower : MonoBehaviour
 
     private bool is_capture_blue = false;  // 青チームが占領中フラグ
     private bool is_capture_red = false;   // 赤チーム占領中フラグ
-    private float blueCaptureLimit = 1000; // 青チームの場合の占領可能ゲージ上限 TODO：テスト
-    private float redCaptureLimit = 0;     // 赤チームの場合の占領可能ゲージ上限 TODO：テスト
-    private float naturalCaptureLimit = 500;// 中立の場合の基準ゲージ値
-    private float captureGaugeValue = 0.1f;// 占領時の基本ゲージ速度
+    private float blueCaptureLimit = BLUE_CAPTURE_LIMIT; // 青チームの場合の占領可能ゲージ上限 TODO：テスト
+    private float redCaptureLimit = RED_CAPTURE_LIMIT;     // 赤チームの場合の占領可能ゲージ上限 TODO：テスト
+    private float naturalCaptureLimit = NATURAL_CAPTURE_LIMIT;// 中立の場合の基準ゲージ値
+    private float captureGaugeValue = CAPTURE_GAUGE_VALUE;// 占領時の基本ゲージ速度
     
-    private int captureRange = 25;  // AIが占領を試みるタワーの有効範囲
+    private int captureRange = CAPTURE_RANGE;  // AIが占領を試みるタワーの有効範囲
     public int getCaptureRange() { return captureRange; }
 
     // 本拠地かどうか
@@ -48,7 +55,7 @@ public class Tower : MonoBehaviour
     public bool IsTargetTowerRespown;  // タワーからリスポーン可能かどうか
 
     // タワーのゲージ状態取得
-    public float GetGaptureGauge()
+    public float GetCaptureGauge()
     {
         return captureGauge; 
     }
@@ -66,7 +73,7 @@ public class Tower : MonoBehaviour
         Capture();
 
         // タワーの状態を変更
-        CangeTower();
+        ChangeTower();
     }
 
     private void SetUpTower()
@@ -162,15 +169,18 @@ public class Tower : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter(Collider other)
     {
+        var character = other.gameObject.GetComponent<BaseCharacter>();
+        if (character == null) return;
+
         // コライダーに入ってきたのが青チームなら
-        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.BLUE)
+        if (character.team_color == TEAM_COLOR.BLUE)
         {
             // 青チーム側のリストに追加
             blueCharaList.Add(other.gameObject);
         }
 
         // コライダーに入ってきたのが赤チームなら
-        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.RED)
+        if (character.team_color == TEAM_COLOR.RED)
         {
             // 赤チーム側のリストに追加
             redCharaList.Add(other.gameObject);
@@ -179,15 +189,18 @@ public class Tower : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        var character = other.gameObject.GetComponent<BaseCharacter>();
+        if (character == null) return;
+
         // コライダーから出て行ったのが青チームなら
-        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.BLUE)
+        if (character.team_color == TEAM_COLOR.BLUE)
         {
             // 青のリストから削除
             blueCharaList.Remove(other.gameObject);
         }
 
         // コライダーから出て行ったのが赤チームなら
-        if (other.gameObject.GetComponent<BaseCharacter>().team_color == TEAM_COLOR.RED)
+        if (character.team_color == TEAM_COLOR.RED)
         {
             // 赤のリストから削除
             redCharaList.Remove(other.gameObject);
@@ -197,7 +210,7 @@ public class Tower : MonoBehaviour
     /// <summary>
     /// タワーの状態を変更
     /// </summary>
-    private void CangeTower()
+    private void ChangeTower()
     {
         List<GameObject> blueTowerList = towerManager.getBlueTowerList();
         List<GameObject> redTowerList = towerManager.getRedTowerList();

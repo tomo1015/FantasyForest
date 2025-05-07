@@ -133,6 +133,12 @@ public class AICharacter : BaseCharacter
     /// <param name="searchColor">探索対象のチームカラー</param>
     private void SearchTower(TEAM_COLOR searchColor)
     {
+        if (towerManager == null)
+        {
+            Debug.LogWarning("TowerManager is not initialized");
+            return;
+        }
+
         int blueTowerCount = towerManager.getBlueTowerCount();
         int redTowerCount = towerManager.getRedTowerCount();
         int natureTowerCount = towerManager.getNatureTowerCount();
@@ -141,19 +147,31 @@ public class AICharacter : BaseCharacter
         List<GameObject> redTowerList = towerManager.getRedTowerList();
         List<GameObject> natureTowerList = towerManager.getNatureTowerList();
 
-        // 中立タワーがあれば最も近いものを優先
-        if (natureTowerCount > 0)
+        GameObject FindNearestTower(List<GameObject> towerList)
         {
+            if (towerList == null || towerList.Count == 0) return null;
+            
             float nearDis = float.MaxValue;
-            foreach (GameObject natureTower in natureTowerList)
+            GameObject nearestTower = null;
+            
+            foreach (GameObject tower in towerList)
             {
-                float distance = Vector3.Distance(natureTower.transform.position, agent.transform.position);
+                if (tower == null) continue;
+                
+                float distance = Vector3.Distance(tower.transform.position, agent.transform.position);
                 if (distance < nearDis)
                 {
                     nearDis = distance;
-                    CaptureTowerObject = natureTower;
+                    nearestTower = tower;
                 }
             }
+            return nearestTower;
+        }
+
+        // 中立タワーがあれば最も近いものを優先
+        if (natureTowerCount > 0)
+        {
+            CaptureTowerObject = FindNearestTower(natureTowerList);
             return;
         }
 
@@ -162,31 +180,13 @@ public class AICharacter : BaseCharacter
             (searchColor == TEAM_COLOR.RED && redTowerCount < blueTowerCount))
         {
             var targetList = (searchColor == TEAM_COLOR.BLUE) ? redTowerList : blueTowerList;
-            float nearDis = float.MaxValue;
-            foreach (GameObject targetTower in targetList)
-            {
-                float distance = Vector3.Distance(targetTower.transform.position, agent.transform.position);
-                if (distance < nearDis)
-                {
-                    nearDis = distance;
-                    CaptureTowerObject = targetTower;
-                }
-            }
+            CaptureTowerObject = FindNearestTower(targetList);
             return;
         }
 
         // それ以外は自チームのタワーで最も近いもの
         var selfList = (searchColor == TEAM_COLOR.BLUE) ? blueTowerList : redTowerList;
-        float selfNearDis = float.MaxValue;
-        foreach (GameObject selfTower in selfList)
-        {
-            float distance = Vector3.Distance(selfTower.transform.position, agent.transform.position);
-            if (distance < selfNearDis)
-            {
-                selfNearDis = distance;
-                CaptureTowerObject = selfTower;
-            }
-        }
+        CaptureTowerObject = FindNearestTower(selfList);
     }
 
     /// <summary>
@@ -210,6 +210,12 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void TowerSearch()
     {
+        if (agent == null || !agent.isActiveAndEnabled || !agent.isOnNavMesh)
+        {
+            Debug.LogWarning($"{gameObject.name}: NavMeshAgent is not properly initialized");
+            return;
+        }
+
         switch (team_color)
         {
             case TEAM_COLOR.BLUE:
@@ -219,8 +225,15 @@ public class AICharacter : BaseCharacter
                 RedTowerSearch();
                 break;
             default:
-                break;
+                return;
         }
+
+        if (CaptureTower == null)
+        {
+            Debug.LogWarning("No suitable tower found for capture");
+            return;
+        }
+
         agent.SetDestination(CaptureTower.transform.position);
         agent.speed = GetCharacterSpeed();
         agent.acceleration = GetCharacterSpeed();
@@ -316,15 +329,30 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void Capture()
     {
+        if (CaptureTower == null)
+        {
+            AiStatus = AI_STATUS.SEARCH;
+            return;
+        }
+
+        var tower = CaptureTower.GetComponent<Tower>();
+        if (tower == null)
+        {
+            AiStatus = AI_STATUS.SEARCH;
+            return;
+        }
+
         //占領中、対象ターゲットの占領範囲内に敵がいれば、対象を優先的に攻撃する
-        List<GameObject> blueCharaList = CaptureTower.GetComponent<Tower>()?.getBlueCharaList();
-        if(blueCharaList.Count > 0){
+        List<GameObject> blueCharaList = tower.getBlueCharaList();
+        if (blueCharaList != null && blueCharaList.Count > 0)
+        {
             StopMovement();
             AttackTarget = blueCharaList[0].gameObject;
             AiStatus = AI_STATUS.ATTACK;
+            return;
         }
 
-        if(CaptureTower.GetComponent<Tower>()?.tower_color == team_color)
+        if (tower.tower_color == team_color)
         {
             StopMovement();
             AiStatus = AI_STATUS.SEARCH;
