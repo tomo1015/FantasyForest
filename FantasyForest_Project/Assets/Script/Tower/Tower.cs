@@ -102,6 +102,26 @@ public class Tower : MonoBehaviour
     /// </summary>
     private void Capture()
     {
+        //占領中リストのキャラクター一覧をチームごとにチェックし、
+        //非アクティブのキャラクターがいればリストから除外する
+        if(blueCharaList.Count > 0){
+            for(int i = 0; i < blueCharaList.Count; i++){
+                var target = blueCharaList[i].gameObject;
+                if(target.GetComponent<BaseCharacter>().getActive() == false){
+                    blueCharaList.Remove(target);
+                }
+            }
+        }
+
+        if(redCharaList.Count > 0){
+            for(int i = 0; i < redCharaList.Count; i++){
+                var target = redCharaList[i].gameObject;
+                if(target.GetComponent<BaseCharacter>().getActive() == false){
+                    redCharaList.Remove(target);
+                }
+            }
+        }
+
         if (blueCharaList.Count > redCharaList.Count)
         {
             // 青チームの人数が赤チームより多ければ青チームが占領中と判定

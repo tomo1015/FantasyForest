@@ -320,7 +320,7 @@ public class AICharacter : BaseCharacter
         List<GameObject> blueCharaList = CaptureTower.GetComponent<Tower>()?.getBlueCharaList();
         if(blueCharaList.Count > 0){
             StopMovement();
-            AttackObject = blueCharaList[0].gameObject;
+            AttackTarget = blueCharaList[0].gameObject;
             AiStatus = AI_STATUS.ATTACK;
         }
 
@@ -364,6 +364,12 @@ public class AICharacter : BaseCharacter
             base.StopAnimation(ANIMATION_STATE.RUN);
             base.PlayAnimation(ANIMATION_STATE.ATTACK);
             targetCharacter.WeaponTakeDamage(WEAPON.Sword);
+            //相手のHPがゼロになったら、攻撃ターゲットを初期化する。
+            //AIステータスは初期化する
+            if(!targetCharacter.getActive()){
+                AttackTarget = null;
+                AiStatus = AI_STATUS.SEARCH;
+            }
         }
         else
         {
