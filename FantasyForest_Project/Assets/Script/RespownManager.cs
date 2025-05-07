@@ -71,14 +71,14 @@ public class RespownManager : SingletonMonoBehaviour<RespownManager>
     {
         switch (targetCharacter.team_color)
         {
-            case TEAM_COLOR.RED:
-                return GetTeamRespawnPosition(towerManager.getRedTowerCount(), 
-                                           towerManager.getRedTowerList(), 
-                                           targetCharacter);
-            case TEAM_COLOR.BLUE:
-                return GetTeamRespawnPosition(towerManager.getBlueTowerCount(), 
-                                           towerManager.getBlueTowerList(), 
-                                           targetCharacter);
+            // case TEAM_COLOR.RED:
+            //     return GetTeamRespawnPosition(towerManager.getRedTowerCount(), 
+            //                                towerManager.getRedTowerList(), 
+            //                                targetCharacter);
+            // case TEAM_COLOR.BLUE:
+            //     return GetTeamRespawnPosition(towerManager.getBlueTowerCount(), 
+            //                                towerManager.getBlueTowerList(), 
+            //                                targetCharacter);
             default:
                 return GetDefaultRespawnPosition();
         }

@@ -19,10 +19,14 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
     public List<GameObject> getRedTowerList() { return redTowerList; }
     public List<GameObject> getNatureTowerList() { return natureTowerList; }
 
+    public int getBlueTowerCount() { return blueTowerList.Count; }
+    public int getRedTowerCount() { return redTowerList.Count; }
+    public int getNatureTowerCount() { return natureTowerList.Count; }
+
     private void Start()
     {
-        //ゲームシーン内にあるタワーオブジェクトから
-        //初期状態のチームカラーによって状態を振り分ける
+        //Q[V[ﾉ�^[IuWFNg
+        //ﾔのチ[J[ﾉて蕉６阨ｪ
         for(int i = 0; i < towerList.Count; i++){
             switch (towerList[i].GetComponent<Tower>().tower_color)
             {
@@ -43,6 +47,6 @@ public class TowerManager : SingletonMonoBehaviour<TowerManager>
 
     private void Update()
     {
-        //タワーの占領状態を更新
+        //^[ﾌ昔蕉９V
     }
 }
