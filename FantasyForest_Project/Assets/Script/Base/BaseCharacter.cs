@@ -12,11 +12,10 @@ public abstract class BaseCharacter : MonoBehaviour
     //キャラクターの情報
     public CHARACTER_TYPE characterType;
 
-    //リスポーン管理クラス
-    [SerializeField]
-    private RespownManager respownManager;
     //リスポーン内部時間
     public int RespownTime = 0;
+
+    private RespawnManager respawnManager;
 
     //キャラクター基本部分
     protected Rigidbody Rigidbody = null;
@@ -34,7 +33,7 @@ public abstract class BaseCharacter : MonoBehaviour
 
     //速度
     private float speed;
-    public float getCharacterSpeed() { return speed; }
+    public float GetCharacterSpeed() { return speed; }
     public void setCharacterSpeed(float value) {  speed = value; }
 
     //見えない武器のゲームオブジェクト
@@ -68,6 +67,9 @@ public abstract class BaseCharacter : MonoBehaviour
         //装備させるためのオブジェクトを探索
         //TODO：指定したキャラクターに対応した武器を装備させる
 
+        // TowerManagerの取得
+        respawnManager = RespawnManager.Instance;
+
         //HPの設定
         CharacterStatus();
 
@@ -83,7 +85,7 @@ public abstract class BaseCharacter : MonoBehaviour
             //HPが0になったら各種判定に使っているアクティブ情報をFalse
             isActive = false;
             //リスポーン管理クラスへ登録
-            respownManager.standRespownList.Add(gameObject);
+            respawnManager.standRespawnList.Add(gameObject);
             //対象となったキャラオブジェクトをシーンから破棄
             //Destroy(gameObject);
             gameObject.SetActive(false);

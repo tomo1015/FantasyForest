@@ -221,8 +221,8 @@ public class AICharacter : BaseCharacter
                 break;
         }
         agent.SetDestination(CaptureTower.transform.position);
-        agent.speed = getCharacterSpeed();
-        agent.acceleration = getCharacterSpeed();
+        agent.speed = GetCharacterSpeed();
+        agent.acceleration = GetCharacterSpeed();
         agent.velocity = new Vector3(50, 0, 50);
         agent.isStopped = false;
         base.PlayAnimation(ANIMATION_STATE.RUN);
@@ -293,7 +293,7 @@ public class AICharacter : BaseCharacter
             defenseTower.defenseCharacterList.Add(gameObject);
             agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
 
-            agent.speed = getCharacterSpeed() * DEFENSE_SPEED_MULTIPLIER;
+            agent.speed = GetCharacterSpeed() * DEFENSE_SPEED_MULTIPLIER;
             agent.acceleration = DEFENSE_ACCELERATION;
             agent.isStopped = false;
 

@@ -18,6 +18,11 @@ public class Player : BaseCharacter
     private const float MIN_MOVE_DISTANCE = 0.001f;
 
     /// <summary>
+    /// 移動速度の係数
+    /// </summary>
+    private const float MOVEMENT_SPEED_FACTOR = 0.5f;
+
+    /// <summary>
     /// 移動方向
     /// </summary>
     private Vector3 moveDirection;
@@ -63,7 +68,7 @@ public class Player : BaseCharacter
         moveDirection = new Vector3(moveX, 0, moveZ);
         moveDirection.Normalize();//正規化（斜めの距離が長くなるのを防ぐ）
 
-        moveVelocity = moveDirection * getCharacterSpeed() / 2;
+        moveVelocity = moveDirection * GetCharacterSpeed() * MOVEMENT_SPEED_FACTOR;
     }
 
     /// <summary>
