@@ -13,7 +13,7 @@ public class AICharacter : BaseCharacter
     /// <summary>
     /// 攻撃可能な範囲
     /// </summary>
-    private const float ATTACK_RANGE = 10f;
+    private const float ATTACK_RANGE = 20.0f;
 
     /// <summary>
     /// 防御時の移動速度倍率
@@ -81,9 +81,6 @@ public class AICharacter : BaseCharacter
     {
         // 基底クラスのStartメソッドを呼び出す
         base.Start();
-
-        isAttackMode = false;//攻撃状態の初期化
-
         // エージェントの取得
         agent = GetComponent<NavMeshAgent>();
         // TowerManagerの取得
@@ -104,6 +101,11 @@ public class AICharacter : BaseCharacter
         switch (ai_status)
         {
             case AI_STATUS.NONE:
+                //各ターゲットの初期化
+                isAttackMode = false;
+                CaptureTower = null;
+                DefenseTower = null;
+                AttackTarget = null;
                 // 探索状態に移行
                 ai_status = AI_STATUS.SEARCH;
                 break;
