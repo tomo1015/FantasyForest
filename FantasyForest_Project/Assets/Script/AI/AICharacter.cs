@@ -438,6 +438,9 @@ public class AICharacter : BaseCharacter
             return;
         }
 
+        //タワー防衛中、攻撃可能エリアの範囲を変更する
+        ChangeChildBoxColliderSize("AttackSearchArea", new Vector3(10f, 0.5f, 10f));
+
         if (!agent.pathPending && agent.remainingDistance < 0.1f)
         {
             agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;

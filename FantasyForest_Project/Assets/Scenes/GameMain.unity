@@ -1830,7 +1830,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_TagString
@@ -2036,6 +2036,7 @@ MonoBehaviour:
   start_position: {x: 0, y: 0, z: 0}
   characterType: 1
   RespownTime: 0
+  current_hp: 0
   WeaponName: 0
   ai_status: 0
   CaptureTowerObject: {fileID: 0}
@@ -2732,6 +2733,7 @@ MonoBehaviour:
   start_position: {x: 0, y: 0, z: 0}
   characterType: 1
   RespownTime: 0
+  current_hp: 0
   WeaponName: 0
   ai_status: 0
   CaptureTowerObject: {fileID: 0}
@@ -2926,7 +2928,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_TagString
@@ -3131,6 +3133,7 @@ MonoBehaviour:
   start_position: {x: 0, y: 0, z: 0}
   characterType: 1
   RespownTime: 0
+  current_hp: 0
   WeaponName: 0
   ai_status: 0
   CaptureTowerObject: {fileID: 0}
@@ -3228,7 +3231,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_TagString
@@ -3434,6 +3437,7 @@ MonoBehaviour:
   start_position: {x: 0, y: 0, z: 0}
   characterType: 1
   RespownTime: 0
+  current_hp: 0
   WeaponName: 0
   ai_status: 0
   CaptureTowerObject: {fileID: 0}
@@ -3816,6 +3820,7 @@ MonoBehaviour:
   start_position: {x: 0, y: 0, z: 0}
   characterType: 1
   RespownTime: 0
+  current_hp: 0
   WeaponName: 0
   ai_status: 0
   CaptureTowerObject: {fileID: 0}
@@ -4291,7 +4296,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100268, guid: e39dd657be7298d408f1a135c76c3d9a, type: 3}
       propertyPath: m_TagString
@@ -4497,6 +4502,7 @@ MonoBehaviour:
   start_position: {x: 0, y: 0, z: 0}
   characterType: 1
   RespownTime: 0
+  current_hp: 0
   WeaponName: 0
   ai_status: 0
   CaptureTowerObject: {fileID: 0}
@@ -5141,11 +5147,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2364118890420217995, guid: 1d423f0b1a5587240b406fa84675bbd3, type: 3}
       propertyPath: m_Size.y
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2364118890420217995, guid: 1d423f0b1a5587240b406fa84675bbd3, type: 3}
       propertyPath: m_Size.z
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2364118890420217995, guid: 1d423f0b1a5587240b406fa84675bbd3, type: 3}
+      propertyPath: m_Center.y
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2952351199456172998, guid: 1d423f0b1a5587240b406fa84675bbd3, type: 3}
       propertyPath: m_LocalPosition.x
