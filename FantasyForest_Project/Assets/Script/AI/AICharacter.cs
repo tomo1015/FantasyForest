@@ -281,8 +281,6 @@ public class AICharacter : BaseCharacter
         if (Vector3.Magnitude(towerDiffPosition) < TOWER_CAPTURE_RANGE)
         {
             StopMovement();
-            base.StopAnimation(ANIMATION_STATE.RUN);
-
             if (CaptureTower.GetComponent<Tower>()?.tower_color == team_color)
             {
                 SwitchToDefenseMode();
@@ -300,6 +298,10 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void StopMovement()
     {
+        //アニメーションの停止
+        base.StopAnimation(ANIMATION_STATE.RUN);
+
+        //AIAgentパラメータの初期化
         agent.speed = 0;
         agent.acceleration = 0;
         agent.velocity = Vector3.zero;
@@ -389,7 +391,6 @@ public class AICharacter : BaseCharacter
         if (distance < ATTACK_RANGE)
         {
             StopMovement();
-            base.StopAnimation(ANIMATION_STATE.RUN);
             base.PlayAnimation(ANIMATION_STATE.ATTACK);
             targetCharacter.WeaponTakeDamage(WEAPON.Sword);
             //相手のHPがゼロになったら、攻撃ターゲットを初期化する。
