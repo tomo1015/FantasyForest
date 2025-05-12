@@ -36,6 +36,7 @@ public abstract class BaseCharacter : MonoBehaviour
     private const string key_isDown = "isDown";
 
     //HP状態
+    [SerializeField]
     private int current_hp;//現在HP
     private int max_hp;//最大HP
 

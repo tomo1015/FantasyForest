@@ -13,7 +13,7 @@ public class AICharacter : BaseCharacter
     /// <summary>
     /// 攻撃可能な範囲
     /// </summary>
-    private const float ATTACK_RANGE = 10f;
+    private const float ATTACK_RANGE = 20.0f;
 
     /// <summary>
     /// 防御時の移動速度倍率
@@ -81,7 +81,6 @@ public class AICharacter : BaseCharacter
     {
         // 基底クラスのStartメソッドを呼び出す
         base.Start();
-
         // エージェントの取得
         agent = GetComponent<NavMeshAgent>();
         // TowerManagerの取得
@@ -93,12 +92,20 @@ public class AICharacter : BaseCharacter
     {
         // HPの更新
         base.Update();
-
+        //更新した結果いなくなった場合はAIのステータスを初期化する
+        if(base.getActive() == false){
+            ai_status = AI_STATUS.NONE;
+        }
 
         // AIステータス管理
         switch (ai_status)
         {
             case AI_STATUS.NONE:
+                //各ターゲットの初期化
+                isAttackMode = false;
+                CaptureTower = null;
+                DefenseTower = null;
+                AttackTarget = null;
                 // 探索状態に移行
                 ai_status = AI_STATUS.SEARCH;
                 break;
@@ -274,8 +281,6 @@ public class AICharacter : BaseCharacter
         if (Vector3.Magnitude(towerDiffPosition) < TOWER_CAPTURE_RANGE)
         {
             StopMovement();
-            base.StopAnimation(ANIMATION_STATE.RUN);
-
             if (CaptureTower.GetComponent<Tower>()?.tower_color == team_color)
             {
                 SwitchToDefenseMode();
@@ -293,6 +298,10 @@ public class AICharacter : BaseCharacter
     /// </summary>
     private void StopMovement()
     {
+        //アニメーションの停止
+        base.StopAnimation(ANIMATION_STATE.RUN);
+
+        //AIAgentパラメータの初期化
         agent.speed = 0;
         agent.acceleration = 0;
         agent.velocity = Vector3.zero;
@@ -342,15 +351,8 @@ public class AICharacter : BaseCharacter
             return;
         }
 
-        //占領中、対象ターゲットの占領範囲内に敵がいれば、対象を優先的に攻撃する
-        List<GameObject> blueCharaList = tower.getBlueCharaList();
-        if (blueCharaList != null && blueCharaList.Count > 0)
-        {
-            StopMovement();
-            AttackTarget = blueCharaList[0].gameObject;
-            AiStatus = AI_STATUS.ATTACK;
-            return;
-        }
+        //占領中、攻撃エリアの範囲を変更する
+        ChangeChildBoxColliderSize("AttackSearchArea",new Vector3(10f,0.5f,10f));
 
         if (tower.tower_color == team_color)
         {
@@ -389,14 +391,13 @@ public class AICharacter : BaseCharacter
         if (distance < ATTACK_RANGE)
         {
             StopMovement();
-            base.StopAnimation(ANIMATION_STATE.RUN);
             base.PlayAnimation(ANIMATION_STATE.ATTACK);
             targetCharacter.WeaponTakeDamage(WEAPON.Sword);
             //相手のHPがゼロになったら、攻撃ターゲットを初期化する。
             //AIステータスは初期化する
             if(!targetCharacter.getActive()){
                 AttackTarget = null;
-                AiStatus = AI_STATUS.SEARCH;
+                AiStatus = AI_STATUS.NONE;
             }
         }
         else
@@ -438,10 +439,39 @@ public class AICharacter : BaseCharacter
             return;
         }
 
+        //タワー防衛中、攻撃可能エリアの範囲を変更する
+        ChangeChildBoxColliderSize("AttackSearchArea", new Vector3(10f, 0.5f, 10f));
+
         if (!agent.pathPending && agent.remainingDistance < 0.1f)
         {
             agent.destination = defenseTower.defensePatrolPosition[PatrolCount].position;
             PatrolCount = (PatrolCount + 1) % defenseTower.defensePatrolPosition.Length;
+        }
+    }
+
+    /// <summary>
+    /// 子オブジェクトのBoxColliderのサイズを変更する
+    /// </summary>
+    /// <param name="childName">子オブジェクトの名前</param>
+    /// <param name="newSize">新しいサイズ</param>
+    private void ChangeChildBoxColliderSize(string childName, Vector3 newSize)
+    {
+        Transform childTransform = transform.Find(childName);
+        if (childTransform != null)
+        {
+            BoxCollider boxCollider = childTransform.GetComponent<BoxCollider>();
+            if (boxCollider != null)
+            {
+                boxCollider.size = newSize;
+            }
+            else
+            {
+                Debug.LogWarning($"BoxCollider not found on child object: {childName}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Child object not found: {childName}");
         }
     }
 }
