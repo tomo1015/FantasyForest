@@ -50,3 +50,9 @@
 - UI（HP・攻撃・タイマー）の実装
 - プレイヤーの選択・操作の介入
 - iOS/GooglePlayビルド対応
+
+---
+
+## 📫 連絡先 / Contact
+- GitHub: [https://github.com/tomo1015](https://github.com/tomo1015)
+- メール: [tomo_a0901@outlook.jp]
