@@ -53,6 +53,9 @@
 
 ---
 
+## 📅 開発期間
+2023年11月〜現在（継続開発中）
+
 ## 📫 連絡先 / Contact
 - GitHub: [https://github.com/tomo1015](https://github.com/tomo1015)
 - メール: [tomo_a0901@outlook.jp]
