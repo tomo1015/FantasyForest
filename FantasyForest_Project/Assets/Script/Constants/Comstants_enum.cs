@@ -40,8 +40,8 @@ namespace Constants
     public enum CHARACTER_TYPE
     {
         NONE,
-        CAT,
-        ELF,
-        GOLEM,
+        CAT =1,
+        ELF = 2,
+        GOLEM = 3,
     }
 }
