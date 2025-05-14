@@ -190,17 +190,17 @@ public abstract class BaseCharacter : MonoBehaviour
         {
             case CHARACTER_TYPE.CAT:
                 max_hp = 100;//最大HP
-                speed = 30;
+                speed = 45;
                 WeaponName = WEAPON.Sword;
                 break;
             case CHARACTER_TYPE.ELF:
                 max_hp = 150;
-                speed = 25;
+                speed = 40;
                 WeaponName = WEAPON.Bow;
                 break;
             case CHARACTER_TYPE.GOLEM:
                 max_hp = 300;
-                speed = 10;
+                speed = 20;
                 WeaponName = WEAPON.NONE;
                 break;
             default:
