@@ -2138,7 +2138,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 1
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 1
+  characterType: 3
   RespownTime: 0
   current_hp: 0
   WeaponName: 0
@@ -2835,7 +2835,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 1
+  characterType: 3
   RespownTime: 0
   current_hp: 0
   WeaponName: 0
@@ -3922,7 +3922,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 1
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 1
+  characterType: 2
   RespownTime: 0
   current_hp: 0
   WeaponName: 0
@@ -4672,7 +4672,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team_color: 0
   start_position: {x: 0, y: 0, z: 0}
-  characterType: 1
+  characterType: 2
   RespownTime: 0
   current_hp: 0
   WeaponName: 0

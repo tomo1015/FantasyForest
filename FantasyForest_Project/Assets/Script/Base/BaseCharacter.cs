@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Constants;
+using MasterMemory;
+using MessagePack;
+using MessagePack.Resolvers;
+using UnityEditor;
 
 public abstract class BaseCharacter : MonoBehaviour
 {
@@ -65,6 +69,17 @@ public abstract class BaseCharacter : MonoBehaviour
     public void setActive(bool value)
     {
         isActive = value;
+    }
+
+    private void Awake()
+    {
+        //MessagePackの初期化
+        var messagePackResolvers = CompositeResolver.Create(
+            MasterMemoryResolver.Instance,//自動生成されたResolver
+            StandardResolver.Instance//MessagePack標準Resolver
+        );
+        var options = MessagePackSerializerOptions.Standard.WithResolver(messagePackResolvers);
+        MessagePackSerializer.DefaultOptions = options;
     }
 
 
@@ -185,30 +200,38 @@ public abstract class BaseCharacter : MonoBehaviour
     /// </summary>
     public void CharacterStatus()
     {
-        //キャラクターのタイプによって設定する情報を変える
+        //ロード(
+        var path = "Assets/Binary/CharacterMaster.bytes";
+        var asset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
+        var binary = asset.bytes;
+
+        // MemoryDataBaseをバイナリから作成
+        var memoryDatabase = new MemoryDatabase(binary);
+        // 設定されたキャラクタータイプに対応したデータを取得
+        var character = memoryDatabase.CharacterMasterTable.FindById((int)characterType);
+
+        //キャラクター毎にステータスを設定
         switch (characterType)
         {
             case CHARACTER_TYPE.CAT:
-                max_hp = 100;//最大HP
-                speed = 45;
+                max_hp = character.Hp;//最大HP
+                speed = character.Speed;
                 WeaponName = WEAPON.Sword;
                 break;
             case CHARACTER_TYPE.ELF:
-                max_hp = 150;
-                speed = 40;
+                max_hp = character.Hp;
+                speed = character.Speed;
                 WeaponName = WEAPON.Bow;
                 break;
             case CHARACTER_TYPE.GOLEM:
-                max_hp = 300;
-                speed = 20;
+                max_hp = character.Hp;
+                speed = character.Speed;
                 WeaponName = WEAPON.NONE;
                 break;
             default:
                 break;
         }
-
         isActive = true;//アクティブ状態
         current_hp = max_hp;//現在HP
-
     }
 }
