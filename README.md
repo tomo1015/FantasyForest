@@ -15,6 +15,10 @@
 - C#
 - Git / GitHub
 
+### 使用パッケージ
+- MasterMemory (https://github.com/Cysharp/MasterMemory)
+- NuGetForUnity (https://github.com/GlitchEnzo/NuGetForUnity)
+
 ---
 
 ## ✨ 主な機能 / Features
